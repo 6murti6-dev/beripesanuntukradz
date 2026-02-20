@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Form Data Siswa</title>
+
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+
+<style>
+/* BODY & BACKGROUND */
+body{
+    margin:0;
+    padding:0;
+    font-family: Arial, Helvetica, sans-serif;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    background: url('https://i.ibb.co/mrVqH7Wf/b9fc0140-b727-4c73-8f74-d183f5066d2e.jpg') no-repeat center center;
+    background-size: cover;
+}
+
+/* KOTAK FORM */
+#form-container {
+    position: relative;
+    padding: 40px;
+    border-radius: 15px;
+    width: 320px;
+    text-align: center;
+    background: rgba(10,10,10,0.85); /* gelap */
+    border: 3px solid #888888;        /* garis tepi abu-abu */
+    box-shadow: 0 0 20px rgba(0,0,0,0.4);
+    animation: fadeIn 1s ease;
+}
+
+/* FORM ELEMENT */
+input{
+    width: 90%;
+    padding: 12px;
+    margin: 12px 0;
+    border: 2px solid #555; /* garis input tetap tegas */
+    border-radius: 8px;
+    outline:none;
+    background: rgba(30,30,30,0.7);
+    color: white;
+}
+
+input::placeholder{
+    color: #aaa;
+}
+
+button{
+    padding: 12px 20px;
+    border:none;
+    border-radius:8px;
+    background: limegreen;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+    transition:0.3s;
+}
+
+button:hover{
+    transform: scale(1.05);
+}
+
+/* LOADING */
+#loading{
+    display:none;
+    margin-top:10px;
+    color: lime;
+}
+
+/* ANIMASI FADE-IN */
+@keyframes fadeIn{
+    from{opacity:0; transform: translateY(30px);}
+    to{opacity:1; transform: translateY(0);}
+}
+
+/* POPUP SUKSES */
+#popup {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left:50%;
+    transform: translate(-50%, -50%);
+    background: rgba(20,20,20,0.95);
+    padding: 30px 40px;
+    border-radius: 15px;
+    border: 3px solid #888888; /* garis abu-abu */
+    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    text-align: center;
+    color: white;
+    z-index: 999;
+    font-size: 18px;
+    animation: popupAnim 0.3s ease;
+}
+
+@keyframes popupAnim{
+    from {opacity:0; transform: translate(-50%, -60%) scale(0.8);}
+    to {opacity:1; transform: translate(-50%, -50%) scale(1);}
+}
+</style>
+</head>
+<body>
+
+<div id="form-container">
+    <form id="form">
+        <input type="text" name="Pesan" placeholder="Masukkan Pesan (contoh: Semangat)" required>
+        <input type="text" name="Nama" placeholder=" Dari = Namamu" required>
+        <button type="submit">Kirim</button>
+        <div id="loading">Mengirim...</div>
+    </form>
+</div>
+
+<!-- POPUP SUKSES -->
+<div id="popup">✅ berhasil dikirim!</div>
+
+<script>
+emailjs.init("spmqmzd2z8R6UfL4K");
+
+document.getElementById("form").addEventListener("submit", function(e){
+    e.preventDefault();
+
+    const loading = document.getElementById("loading");
+    const popup = document.getElementById("popup");
+
+    loading.style.display = "block";
+
+    emailjs.sendForm("service_ju9t1os", "template_qaufklr", this)
+    .then(function(){
+        loading.style.display = "none";
+        popup.style.display = "block";
+
+        // Hapus popup otomatis setelah 1 detik
+        setTimeout(()=>{popup.style.display="none"}, 1000);
+
+        document.getElementById("form").reset();
+    }, function(error){
+        loading.style.display = "none";
+        alert("❌ Gagal mengirim!");
+    });
+});
+</script>
+
+</body>
+</html>
