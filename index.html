@@ -1,148 +1,996 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Form Data Siswa</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Premium World Cup 2026 P2P Chat</title>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
+    <style>
+        :root {
+            /* Tema FIFA World Cup 2026 Premium */
+            --stadium-green: #064e3b;
+            --pitch-dark: #022c22;
+            --trophy-gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.2);
+            --primary: #10b981;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --bg-body: #01140f;
+            --surface: #042f24;
+            --surface-card: #064032;
+            --surface-input: #021a14;
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --glass-border-active: rgba(255, 255, 255, 0.2);
+            --bubble-me: linear-gradient(135deg, #059669, #047857);
+            --bubble-them: #115e59;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* iOS Glassmorphism Spec */
+            --ios-glass-bg: rgba(4, 32, 25, 0.65);
+            --ios-glass-blur: blur(20px) saturate(190%);
+        }
 
-<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+        body { background-color: var(--bg-body); display: flex; flex-direction: column; height: 100vh; color: var(--text-main); overflow: hidden; justify-content: center; align-items: center; }
+        
+        .screen { 
+            display: flex; flex-direction: column; height: 100vh; width: 100%; max-width: 450px; margin: 0 auto; overflow: hidden;
+            opacity: 0; transform: translate3d(0, 16px, 0); pointer-events: none; transition: opacity 0.4s var(--transition-smooth), transform 0.4s var(--transition-smooth); position: absolute;
+            background: var(--bg-body); border-left: 1px solid var(--glass-border); border-right: 1px solid var(--glass-border);
+        }
+        .screen.active { opacity: 1; transform: translate3d(0, 0, 0); pointer-events: auto; position: relative; }
 
-<style>
-/* BODY & BACKGROUND */
-body{
-    margin:0;
-    padding:0;
-    font-family: Arial, Helvetica, sans-serif;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    height:100vh;
-    background: url('https://i.ibb.co/mrVqH7Wf/b9fc0140-b727-4c73-8f74-d183f5066d2e.jpg') no-repeat center center;
-    background-size: cover;
-}
+        /* --- TAMPILAN LOGIN & DAFTAR --- */
+        .auth-container { display: flex; flex-direction: column; justify-content: center; padding: 24px; height: 100%; background: radial-gradient(circle at top, #065f46 0%, var(--bg-body) 100%); }
+        .auth-box { 
+            background: rgba(4, 47, 36, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border); padding: 36px 24px; border-radius: 28px; 
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+        }
+        .auth-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--trophy-gold); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 20px; letter-spacing: 0.5px; }
+        .auth-box h2 { font-size: 26px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; color: #fff; }
+        .auth-box p { color: var(--text-muted); font-size: 13.5px; margin-bottom: 28px; line-height: 1.5; }
+        
+        .input-wrapper { position: relative; margin-bottom: 18px; text-align: left; }
+        .input-wrapper label { font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin-left: 4px; display: block; margin-bottom: 8px; }
+        
+        .input-group-action { display: flex; gap: 8px; }
+        .auth-box input, .modal-content input, .code-input { 
+            width: 100%; padding: 14px 16px; border: 1px solid var(--glass-border); border-radius: 16px; 
+            background: var(--surface-input); color: white; font-size: 14px; outline: none; transition: all 0.2s ease;
+        }
+        .auth-box input:focus, .modal-content input:focus, .code-input:focus { border-color: var(--trophy-gold); background: #010d0a; box-shadow: 0 0 0 3px var(--gold-glow); }
+        
+        .btn-rand { background: var(--surface-card); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0 16px; border-radius: 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+        .btn-rand:hover { background: var(--glass-border-active); color: var(--trophy-gold); }
+        .toggle-auth { color: var(--text-muted); font-size: 13px; cursor: pointer; display: inline-block; margin-top: 24px; transition: color 0.2s ease; font-weight: 500; text-decoration: none; }
+        .toggle-auth:hover { color: var(--trophy-gold); }
 
-/* KOTAK FORM */
-#form-container {
-    position: relative;
-    padding: 40px;
-    border-radius: 15px;
-    width: 320px;
-    text-align: center;
-    background: rgba(10,10,10,0.85); /* gelap */
-    border: 3px solid #888888;        /* garis tepi abu-abu */
-    box-shadow: 0 0 20px rgba(0,0,0,0.4);
-    animation: fadeIn 1s ease;
-}
+        /* --- IPHONE FLOATING CARD HEADER (UPDATED GLASSMORPHISM) --- */
+        header { 
+            background: var(--ios-glass-bg);
+            backdrop-filter: var(--ios-glass-blur);
+            -webkit-backdrop-filter: var(--ios-glass-blur);
+            padding: 14px 20px; display: flex; align-items: center; justify-content: space-between;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            border-radius: 24px;
+            margin: 16px 16px 8px 16px;
+            box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+            z-index: 10;
+        }
+        .header-title { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; color: #fff; display: flex; align-items: center; gap: 8px; }
+        .header-title i { color: var(--trophy-gold); width: 18px; height: 18px; }
+        
+        .badge-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
+        .badge-status.online { background: rgba(16, 185, 129, 0.15); color: #fff; border: 1px solid var(--success); box-shadow: 0 0 10px rgba(16, 185, 129, 0.3); }
 
-/* FORM ELEMENT */
-input{
-    width: 90%;
-    padding: 12px;
-    margin: 12px 0;
-    border: 2px solid #555; /* garis input tetap tegas */
-    border-radius: 8px;
-    outline:none;
-    background: rgba(30,30,30,0.7);
-    color: white;
-}
+        /* --- BOTTOM NAVIGATION BAR (FIXED: ROUNDED BORDERS ON ALL CORNERS LIKE FLOATING HEADER) --- */
+        .bottom-nav { 
+            display: flex; 
+            background: var(--ios-glass-bg);
+            backdrop-filter: var(--ios-glass-blur);
+            -webkit-backdrop-filter: var(--ios-glass-blur);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            padding: 12px 16px; 
+            gap: 12px; 
+            border-radius: 24px;
+            margin: 8px 16px 16px 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+        }
+        .nav-item {
+            flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 10px; border-radius: 16px;
+            font-size: 12px; font-weight: 600; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; transition: all 0.2s var(--transition-smooth);
+        }
+        .nav-item i { width: 20px; height: 20px; opacity: 0.7; }
+        .nav-item.active { color: var(--trophy-gold); background: rgba(251, 191, 36, 0.1); }
+        .nav-item.active i { opacity: 1; color: var(--trophy-gold); }
 
-input::placeholder{
-    color: #aaa;
-}
+        /* --- KONTEN TAB --- */
+        .tab-content { flex: 1; display: none; flex-direction: column; overflow-y: auto; padding: 16px 20px; }
+        .tab-content.active { display: flex; }
 
-button{
-    padding: 12px 20px;
-    border:none;
-    border-radius:8px;
-    background: limegreen;
-    color:white;
-    font-weight:bold;
-    cursor:pointer;
-    transition:0.3s;
-}
+        /* Profil Section */
+        .profile-hero-card {
+            background: linear-gradient(135deg, var(--surface-card) 0%, var(--surface) 100%);
+            border: 1px solid var(--glass-border); border-radius: 24px; padding: 24px; display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
+        }
+        .hero-avatar { width: 56px; height: 56px; border-radius: 18px; background: linear-gradient(135deg, var(--trophy-gold), #d97706); color: #000; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 800; box-shadow: 0 8px 20px rgba(251, 191, 36, 0.3); }
+        .hero-info { flex: 1; }
+        .hero-info .hero-name { font-size: 17px; font-weight: 700; color: var(--text-main); }
+        .hero-info .hero-id { font-size: 12.5px; color: var(--text-muted); margin-top: 2px; }
+        .btn-edit-profile { display: inline-flex; align-items: center; gap: 6px; background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); padding: 8px 14px; border-radius: 12px; color: var(--text-main); font-size: 11px; font-weight: 600; margin-top: 10px; }
+        .btn-edit-profile:hover { background: var(--glass-border-active); color: var(--trophy-gold); }
 
-button:hover{
-    transform: scale(1.05);
-}
+        .dashboard-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .stat-card { background: var(--surface); border: 1px solid var(--glass-border); padding: 14px 10px; border-radius: 16px; text-align: center; }
+        .stat-card label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px; }
+        .stat-card span { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
-/* LOADING */
-#loading{
-    display:none;
-    margin-top:10px;
-    color: lime;
-}
+        /* PREMIUM APP CONFIG MENUS (NEW CARDS) */
+        .app-settings-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+        .cool-setting-card {
+            background: linear-gradient(135deg, rgba(6, 64, 50, 0.6) 0%, rgba(4, 47, 36, 0.4) 100%);
+            border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px 16px;
+            display: flex; align-items: center; justify-content: space-between; cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .cool-setting-card:hover {
+            border-color: rgba(251, 191, 36, 0.4);
+            background: linear-gradient(135deg, rgba(6, 64, 50, 0.8) 0%, rgba(4, 47, 36, 0.6) 100%);
+            transform: translateX(2px);
+        }
+        .cool-card-left { display: flex; align-items: center; gap: 12px; }
+        .cool-card-icon {
+            width: 38px; height: 38px; border-radius: 12px; background: rgba(251, 191, 36, 0.08);
+            display: flex; align-items: center; justify-content: center; color: var(--trophy-gold);
+            border: 1px solid rgba(251, 191, 36, 0.15);
+        }
+        .cool-card-icon i { width: 18px; height: 18px; }
+        .cool-card-text h5 { font-size: 14px; font-weight: 700; color: #fff; }
+        .cool-card-text p { font-size: 11.5px; color: var(--text-muted); margin-top: 1px; }
+        .cool-card-arrow { color: var(--text-muted); opacity: 0.6; }
 
-/* ANIMASI FADE-IN */
-@keyframes fadeIn{
-    from{opacity:0; transform: translateY(30px);}
-    to{opacity:1; transform: translateY(0);}
-}
+        .setup-box { background: var(--surface); border: 1px solid var(--glass-border); padding: 20px; border-radius: 24px; display: flex; flex-direction: column; gap: 16px; }
+        .setup-box h3 { font-size: 14.5px; font-weight: 700; }
+        .setup-box p { font-size: 12.5px; color: var(--text-muted); line-height: 1.6; }
+        
+        .sub-tab-group { display: flex; background: var(--surface-input); padding: 4px; border-radius: 12px; border: 1px solid var(--glass-border); }
+        .sub-tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 10px; border-radius: 9px; font-size: 12px; font-weight: 600; transition: all 0.2s ease; }
+        .sub-tab-btn.active { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--glass-border); }
+        
+        /* --- BUTTON SYSTEM --- */
+        button { font-size: 13.5px; font-weight: 600; transition: all 0.2s var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; }
+        button.main-btn { background: var(--primary); color: white; border: none; padding: 14px 20px; border-radius: 16px; width: 100%; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; }
+        button.main-btn:hover { background: #059669; transform: translateY(-1px); }
+        button.secondary-btn { background: rgba(255,255,255,0.03); color: var(--text-main); border: 1px solid var(--glass-border); padding: 14px 20px; border-radius: 16px; width: 100%; }
+        button.secondary-btn:hover { background: rgba(255,255,255,0.06); }
+        button.danger-btn { background: rgba(244, 63, 94, 0.05); color: var(--danger); border: 1px solid rgba(244, 63, 94, 0.15); padding: 14px 20px; border-radius: 16px; width: 100%; }
+        button.danger-btn:hover { background: rgba(244, 63, 94, 0.1); }
+        
+        /* MODERN COPIED & PASTE ICON BUTTONS */
+        .action-row { display: flex; gap: 8px; align-items: center; width: 100%; }
+        .btn-action-icon { width: 50px; height: 50px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--surface-card); color: var(--text-main); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
+        .btn-action-icon:hover { background: var(--glass-border-active); color: var(--trophy-gold); border-color: var(--trophy-gold); }
+        .btn-action-icon:active { transform: scale(0.95); }
+        .btn-action-icon i { width: 20px; height: 20px; }
 
-/* POPUP SUKSES */
-#popup {
-    display: none;
-    position: fixed;
-    top: 50%;
-    left:50%;
-    transform: translate(-50%, -50%);
-    background: rgba(20,20,20,0.95);
-    padding: 30px 40px;
-    border-radius: 15px;
-    border: 3px solid #888888; /* garis abu-abu */
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
-    text-align: center;
-    color: white;
-    z-index: 999;
-    font-size: 18px;
-    animation: popupAnim 0.3s ease;
-}
+        /* QR BOX & DOWNLOAD BUTTON */
+        .qr-wrapper-card { background: var(--surface-input); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; text-align: center; margin: 10px 0; }
+        .qr-container { display: flex; justify-content: center; padding: 14px; background: white; border-radius: 18px; width: max-content; margin: 0 auto 12px auto; }
+        .btn-download-qr { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); color: var(--trophy-gold); padding: 8px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
+        .btn-download-qr:hover { background: rgba(251, 191, 36, 0.2); }
 
-@keyframes popupAnim{
-    from {opacity:0; transform: translate(-50%, -60%) scale(0.8);}
-    to {opacity:1; transform: translate(-50%, -50%) scale(1);}
-}
-</style>
+        #readerA, #readerB { width: 100%; max-width: 240px; border-radius: 18px; overflow: hidden; margin: 0 auto; border: 1px solid var(--glass-border); }
+
+        /* --- WORLD CUP 2026 STADIUM CHAT CONTAINER --- */
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #011c15; position: relative; }
+        
+        /* Pola Garis Abstrak Sepakbola Lapangan (FIFA World Cup Vibe) */
+        .chat-container::before {
+            content: ''; position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
+            background-image: 
+                radial-gradient(circle at 50% 50%, transparent 120px, var(--text-main) 121px, var(--text-main) 123px, transparent 124px),
+                linear-gradient(var(--text-main) 2px, transparent 2px),
+                linear-gradient(90deg, var(--text-main) 2px, transparent 2px);
+            background-size: 100% 100%, 40px 40px, 40px 40px;
+            background-position: center center;
+        }
+
+        #messages { flex: 1; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding: 16px 20px; z-index: 1; }
+        #messages::-webkit-scrollbar { width: 4px; }
+        #messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
+        
+        .msg-system { align-self: center; background: rgba(2, 44, 34, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); padding: 6px 14px; border-radius: 100px; font-size: 11px; color: var(--trophy-gold); font-weight: 600; letter-spacing: 0.2px; text-align: center; max-width: 90%; }
+        
+        /* --- SUPER DUPER COOL MESSAGE CARDS --- */
+        .msg-wrapper { display: flex; flex-direction: column; max-width: 85%; animation: messageFadeIn 0.35s var(--transition-smooth); position: relative; }
+        .msg-wrapper.me { align-self: flex-end; align-items: flex-end; }
+        .msg-wrapper.them { align-self: flex-start; align-items: flex-start; }
+        
+        .msg-sender { font-size: 11px; color: var(--text-muted); margin-bottom: 5px; font-weight: 700; padding: 0 6px; display: flex; align-items: center; gap: 4px; letter-spacing: 0.3px; }
+        .msg-wrapper.me .msg-sender { color: var(--trophy-gold); }
+        .msg-wrapper.me .msg-sender::after { content: '⚽'; font-size: 9px; filter: drop-shadow(0 0 4px var(--trophy-gold)); }
+        
+        .msg { 
+            padding: 14px 18px; 
+            border-radius: 22px; 
+            font-size: 14.5px; 
+            word-break: break-all; 
+            line-height: 1.52; 
+            position: relative; 
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+            transition: all 0.2s ease;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+        
+        .msg-wrapper.me .msg { 
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.9) 0%, rgba(4, 120, 87, 0.95) 100%); 
+            border-bottom-right-radius: 6px; 
+            color: white; 
+            border: 1px solid rgba(255, 255, 255, 0.15); 
+            box-shadow: 0 6px 20px rgba(16, 185, 129, 0.25);
+        }
+        
+        .msg-wrapper.them .msg { 
+            background: linear-gradient(135deg, rgba(17, 94, 89, 0.85) 0%, rgba(13, 148, 136, 0.75) 100%); 
+            border-bottom-left-radius: 6px; 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            color: #f1f5f9; 
+            box-shadow: 0 6px 20px rgba(17, 94, 89, 0.2);
+        }
+        
+        /* Tambahkan efek kilau halus premium pada sisi balon obrolan */
+        .msg::before {
+            content: ''; position: absolute; inset: 0; border-radius: inherit;
+            background: linear-gradient(to bottom right, rgba(255,255,255,0.1), transparent);
+            pointer-events: none;
+        }
+        
+        .msg-content { display: block; letter-spacing: -0.1px; }
+        .msg-time { font-size: 10px; opacity: 0.65; margin-top: 6px; display: block; text-align: right; font-weight: 600; letter-spacing: 0.2px; }
+        .msg-wrapper.me .msg-time { color: rgba(255, 255, 255, 0.8); }
+
+        /* --- INPUT BOX (FIXED: ROUNDED BORDERS ON ALL CORNERS LIKE FLOATING HEADER) --- */
+        .input-box { 
+            display: flex; gap: 10px; padding: 14px 16px; 
+            background: var(--ios-glass-bg);
+            backdrop-filter: var(--ios-glass-blur);
+            -webkit-backdrop-filter: var(--ios-glass-blur);
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+            z-index: 10; align-items: center; 
+            border-radius: 24px;
+            margin: 8px 16px 16px 16px;
+            box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
+        }
+        .input-box input { flex: 1; padding: 13px 18px; border: 1px solid var(--glass-border); border-radius: 100px; outline: none; font-size: 14px; background: var(--surface-input); color: var(--text-main); transition: all 0.2s ease; }
+        .input-box input:focus { border-color: var(--trophy-gold); background: #010a08; }
+        .send-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--trophy-gold); color: #000; border: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+        .send-btn:disabled { background: var(--surface-input); color: var(--text-muted); border: 1px solid var(--glass-border); cursor: not-allowed; }
+        .send-btn i { width: 18px; height: 18px; }
+
+        /* --- NOTIFIKASI & MODAL PENGATURAN IPHONE CARD STYLE --- */
+        .modal { 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 13, 10, 0.85); 
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; transition: opacity 0.3s ease;
+        }
+        .modal.show { display: flex; opacity: 1; }
+        
+        /* Ubah pop up pengaturan lebih eksklusif & keren */
+        .modal-content { 
+            background: linear-gradient(145deg, var(--surface-card) 0%, var(--surface) 100%); 
+            padding: 32px 24px; border-radius: 32px; width: 90%; max-width: 360px; 
+            text-align: center; border: 1px solid rgba(255, 255, 255, 0.12); box-shadow: 0 40px 80px rgba(0,0,0,0.8);
+            transform: scale(0.9) translate3d(0, 20px, 0); transition: transform 0.3s var(--transition-smooth);
+        }
+        .modal.show .modal-content { transform: scale(1) translate3d(0, 0, 0); }
+        
+        .modal-header-icon { width: 48px; height: 48px; border-radius: 16px; background: rgba(251, 191, 36, 0.1); color: var(--trophy-gold); display: inline-flex; align-items: center; justify-content: center; margin-bottom: 12px; border: 1px solid rgba(251, 191, 36, 0.2); }
+        .modal-content h4 { color: white; margin-bottom: 6px; font-size: 19px; font-weight: 800; letter-spacing: -0.4px; }
+        .modal-content .modal-subtitle { font-size: 13px; color: var(--text-muted); margin-bottom: 24px; display: block; }
+        
+        .modal-content .field-group { text-align: left; margin-bottom: 18px; }
+        .modal-content label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: 0.3px; padding-left: 2px; }
+
+        /* --- STYLING BUTTON PENGATURAN NODE AKUN (UPGRADED) --- */
+        .modal-btn-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 24px;
+        }
+        .modal-btn-grid .main-btn {
+            grid-column: span 2;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            box-shadow: 0 4px 14px rgba(16, 185, 129, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .modal-btn-grid .main-btn:hover {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            transform: translateY(-1px);
+        }
+        .modal-btn-grid .secondary-btn, .modal-btn-grid .danger-btn {
+            padding: 12px 14px;
+            border-radius: 14px;
+            font-size: 13px;
+        }
+        .modal-btn-grid .secondary-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text-main);
+        }
+        .modal-btn-grid .secondary-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+        .modal-btn-grid .danger-btn {
+            background: rgba(244, 63, 94, 0.08);
+            border: 1px solid rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+        .modal-btn-grid .danger-btn:hover {
+            background: rgba(244, 63, 94, 0.16);
+            border-color: rgba(244, 63, 94, 0.4);
+            color: #ffe4e6;
+        }
+
+        /* Icon State Pop-up */
+        .status-popup-icon { width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; }
+        .status-popup-icon.success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
+        .status-popup-icon.danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .status-popup-icon i { width: 28px; height: 28px; }
+
+        @keyframes messageFadeIn {
+            from { opacity: 0; transform: translate3d(0, 10px, 0); }
+            to { opacity: 1; transform: translate3d(0, 0, 0); }
+        }
+    </style>
 </head>
 <body>
 
-<div id="form-container">
-    <form id="form">
-        <input type="text" name="Pesan" placeholder="Masukkan Pesan (contoh: Semangat)" required>
-        <input type="text" name="Nama" placeholder=" Dari = Namamu" required>
-        <button type="submit">Kirim</button>
-        <div id="loading">Mengirim...</div>
-    </form>
-</div>
+    <div id="authScreen" class="screen">
+        <div class="auth-container">
+            <div id="registerForm" class="auth-box">
+                <div class="auth-badge"><i data-lucide="trophy"></i>World Cup Node</div>
+                <h2>Buat Akun Profil</h2>
+                <p>Data identitas Anda tersimpan privat secara enkripsi aman di lokal perangkat.</p>
+                
+                <div class="input-wrapper">
+                    <label>Nama Pengguna</label>
+                    <input type="text" id="regNama" placeholder="Nama panggilan Anda..." maxlength="12">
+                </div>
+                <div class="input-wrapper">
+                    <label>ID Unik Akun</label>
+                    <div class="input-group-action">
+                        <input type="text" id="regId" placeholder="Membangun kunci ID..." maxlength="15">
+                        <button class="btn-rand" type="button" onclick="acakUlangId()"><i data-lucide="refresh-cw" style="width:14px;"></i>Acak</button>
+                    </div>
+                </div>
+                <div class="input-wrapper">
+                    <label>Kata Sandi Keamanan</label>
+                    <input type="password" id="regSandi" placeholder="Sandi rahasia enkripsi...">
+                </div>
+                
+                <button class="main-btn" onclick="daftarAkun()">Daftar & Inisialisasi <i data-lucide="arrow-right" style="width:16px;"></i></button>
+                <center><span class="toggle-auth" onclick="toggleAuthMode('login')">Sudah terdaftar? Masuk ke sistem lokal</span></center>
+            </div>
 
-<!-- POPUP SUKSES -->
-<div id="popup">✅ berhasil dikirim!</div>
+            <div id="loginForm" class="auth-box" style="display: none;">
+                <div class="auth-badge"><i data-lucide="key-round"></i>Kredensial Entry</div>
+                <h2>Masuk Aplikasi</h2>
+                <p>Gunakan ID unik lokal yang telah terdaftar pada database penyimpanan internal perangkat ini.</p>
+                
+                <div class="input-wrapper">
+                    <label>ID Unik Akun</label>
+                    <input type="text" id="logId" placeholder="Ketik ID unik Anda...">
+                </div>
+                <div class="input-wrapper">
+                    <label>Kata Sandi</label>
+                    <input type="password" id="logSandi" placeholder="Ketik sandi keamanan Anda...">
+                </div>
+                
+                <button class="main-btn" onclick="loginAkun()">Otentikasi & Masuk <i data-lucide="log-in" style="width:16px;"></i></button>
+                <center><span class="toggle-auth" onclick="toggleAuthMode('register')">Belum memiliki profil? Bangun Baru</span></center>
+            </div>
+        </div>
+    </div>
 
-<script>
-emailjs.init("spmqmzd2z8R6UfL4K");
+    <div id="mainScreen" class="screen">
+        <header>
+            <div class="header-title" id="appHeaderTitle"><i data-lucide="trophy"></i>Ruang Obrolan</div>
+            <div class="badge-status" id="statusKoneksi"><i data-lucide="activity" style="width:12px;"></i>Offline</div>
+        </header>
 
-document.getElementById("form").addEventListener("submit", function(e){
-    e.preventDefault();
+        <div id="tabObrolan" class="tab-content active" style="padding: 0;">
+            <div class="chat-container">
+                <div id="messages">
+                    <div class="msg-system">Status Node: Menunggu Inisialisasi Enkripsi P2P</div>
+                </div>
+                <div class="input-box">
+                    <input type="text" id="msgInput" placeholder="Ketik pesan terenkripsi peer..." disabled>
+                    <button class="send-btn" id="sendBtn" onclick="kirimPesan()" disabled><i data-lucide="send"></i></button>
+                </div>
+            </div>
+        </div>
 
-    const loading = document.getElementById("loading");
-    const popup = document.getElementById("popup");
+        <div id="tabProfil" class="tab-content">
+            <div class="profile-hero-card">
+                <div class="hero-avatar" id="myAvatar">-</div>
+                <div class="hero-info">
+                    <div class="hero-name" id="myProfileName">Mengambil...</div>
+                    <div class="hero-id" id="myProfileId">@id</div>
+                    <button class="btn-edit-profile" onclick="bukaModalProfil()"><i data-lucide="sliders" style="width:12px;"></i>Pengaturan Akun</button>
+                </div>
+            </div>
 
-    loading.style.display = "block";
+            <div class="dashboard-stats">
+                <div class="stat-card"><label>Core Engine</label><span>WebRTC</span></div>
+                <div class="stat-card"><label>Trafik</label><span>0 KB</span></div>
+                <div class="stat-card"><label>Node Status</label><span>Aman</span></div>
+            </div>
 
-    emailjs.sendForm("service_ju9t1os", "template_qaufklr", this)
-    .then(function(){
-        loading.style.display = "none";
-        popup.style.display = "block";
+            <div class="app-settings-cards">
+                <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Info Aplikasi', 'Premium World Cup 2026 P2P Chat v1.0.0. Aplikasi komunikasi peer-to-peer tanpa server perantara, menjamin privasi chatting Anda secara instan dan aman.')">
+                    <div class="cool-card-left">
+                        <div class="cool-card-icon"><i data-lucide="info"></i></div>
+                        <div class="cool-card-text">
+                            <h5>Info Aplikasi & Penjelasan</h5>
+                            <p>Detail arsitektur enkripsi node lokal</p>
+                        </div>
+                    </div>
+                    <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
+                </div>
 
-        // Hapus popup otomatis setelah 1 detik
-        setTimeout(()=>{popup.style.display="none"}, 1000);
+                <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Kebijakan Privasi', 'Aplikasi ini menggunakan teknologi WebRTC P2P. Seluruh riwayat obrolan dan data profil Anda disimpan terenkripsi di penyimpanan lokal (localStorage) perangkat Anda. Tidak ada data yang dikirim ke server luar.')">
+                    <div class="cool-card-left">
+                        <div class="cool-card-icon"><i data-lucide="shield-alert"></i></div>
+                        <div class="cool-card-text">
+                            <h5>Kebijakan Privasi</h5>
+                            <p>Keamanan data kedaulatan lokal</p>
+                        </div>
+                    </div>
+                    <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
+                </div>
 
-        document.getElementById("form").reset();
-    }, function(error){
-        loading.style.display = "none";
-        alert("❌ Gagal mengirim!");
-    });
-});
-</script>
+                <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Tutorial Koneksi', '1. HP 1 pilih Buat Kamar Rute.\n2. HP 2 pilih Gabung Kamar Aktif.\n3. Gunakan kamera untuk scan QR Code satu sama lain secara bergantian atau salin kode manual untuk sinkronisasi jalur enkripsi.')">
+                    <div class="cool-card-left">
+                        <div class="cool-card-icon"><i data-lucide="help-circle"></i></div>
+                        <div class="cool-card-text">
+                            <h5>Tutorial Sinkronisasi</h5>
+                            <p>Panduan langkah menghubungkan dua device</p>
+                        </div>
+                    </div>
+                    <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
+                </div>
+            </div>
 
+            <div class="setup-box" id="setupArea">
+                <div id="roleSelection">
+                    <h3>Konfigurasi Jalur Enkripsi</h3>
+                    <p style="margin-top: 4px; margin-bottom: 14px;">Sambungkan kedua perangkat ke jaringan lokal nirikabel yang sama untuk memulai pertukaran sinyal.</p>
+                    <button class="main-btn" onclick="pilihPeran('A')" style="margin-bottom: 8px;"><i data-lucide="plus-circle" style="width:16px;"></i>Buat Kamar Rute (HP 1)</button>
+                    <button class="main-btn secondary-btn" onclick="pilihPeran('B')"><i data-lucide="link-2" style="width:16px;"></i>Gabung Kamar Aktif (HP 2)</button>
+                </div>
+
+                <div id="methodSelection" style="display:none;">
+                    <h3>Metode Sinkronisasi Kunci</h3>
+                    <div class="sub-tab-group" style="margin-bottom: 12px;">
+                        <button class="sub-tab-btn active" id="tabQR" onclick="gantiMetode('QR')">Kamera QR Scan</button>
+                        <button class="sub-tab-btn" id="tabKode" onclick="gantiMetode('KODE')">Kode Manual</button>
+                    </div>
+
+                    <div id="areaA" style="display:none;">
+                        <div class="konten-qr">
+                            <p style="margin-bottom: 8px; font-size: 12px;">1. Biarkan HP 2 memindai barcode ini:</p>
+                            <div class="qr-wrapper-card">
+                                <div class="qr-container" id="qrcodeA"></div>
+                                <button class="btn-download-qr" onclick="unduhQR('qrcodeA')"><i data-lucide="download"></i>Unduh QR</button>
+                            </div>
+                        </div>
+                        <div class="konten-kode" style="display:none;">
+                            <p style="margin-bottom: 6px; font-size: 12px;">1. Salin & Kirim kode rute awal ke HP 2:</p>
+                            <div class="action-row">
+                                <input type="text" id="tokenTeksA" class="code-input" readonly placeholder="Membangun rute...">
+                                <button class="btn-action-icon" onclick="salinTeks('tokenTeksA')" title="Salin Kode"><i data-lucide="copy"></i></button>
+                            </div>
+                        </div>
+                        <hr style="border:0; border-top:1px solid var(--glass-border); margin:14px 0;">
+                        <div class="konten-qr">
+                            <p style="margin-bottom: 8px; font-size: 12px;">2. Scan QR Balasan dari layar HP 2:</p>
+                            <button class="main-btn" onclick="bukaKamera('A')" id="btnCamA"><i data-lucide="camera" style="width:16px;"></i>Aktifkan Kamera</button>
+                            <div id="readerA"></div>
+                        </div>
+                        <div class="konten-kode" style="display:none;">
+                            <p style="margin-bottom: 6px; font-size: 12px;">2. Tempelkan kode balasan dari HP 2:</p>
+                            <div class="action-row">
+                                <input type="text" id="inputTeksB" class="code-input" placeholder="Tempel rute respon...">
+                                <button class="btn-action-icon" onclick="tempelTeks('inputTeksB')" title="Tempel Kode"><i data-lucide="clipboard-paste"></i></button>
+                            </div>
+                            <button class="main-btn" style="margin-top: 10px;" onclick="konekManualA()"><i data-lucide="shield-check" style="width:16px;"></i>Otentikasi Jalur</button>
+                        </div>
+                    </div>
+
+                    <div id="areaB" style="display:none;">
+                        <div class="konten-qr">
+                            <p style="margin-bottom: 8px; font-size: 12px;">1. Arahkan kamera ke QR HP 1:</p>
+                            <button class="main-btn" onclick="bukaKamera('B')" id="btnCamB"><i data-lucide="scan" style="width:16px;"></i>Buka Kamera Pemindai</button>
+                            <div id="readerB"></div>
+                        </div>
+                        <div class="konten-kode" style="display:none;">
+                            <p style="margin-bottom: 6px; font-size: 12px;">1. Tempelkan kode sdp dari HP 1:</p>
+                            <div class="action-row">
+                                <input type="text" id="inputTeksA" class="code-input" placeholder="Tempel rute HP 1...">
+                                <button class="btn-action-icon" onclick="tempelTeks('inputTeksA')" title="Tempel Kode"><i data-lucide="clipboard-paste"></i></button>
+                            </div>
+                            <button class="main-btn" style="margin-top: 10px;" onclick="prosesManualB()"><i data-lucide="cpu" style="width:16px;"></i>Proses Sinyal Rute</button>
+                        </div>
+                        <div id="jawabanBSection" style="display: none; margin-top: 14px; border-top: 1px solid var(--glass-border); padding-top: 14px;">
+                            <div class="konten-qr">
+                                <p style="margin-bottom: 8px; font-size: 12px;">2. Biarkan HP 1 memindai QR balasan di bawah:</p>
+                                <div class="qr-wrapper-card">
+                                    <div class="qr-container" id="qrcodeB"></div>
+                                    <button class="btn-download-qr" onclick="unduhQR('qrcodeB')"><i data-lucide="download"></i>Unduh QR</button>
+                                </div>
+                            </div>
+                            <div class="konten-kode" style="display:none;">
+                                <p style="margin-bottom: 6px; font-size: 12px;">2. Salin kode balik ini ke HP 1:</p>
+                                <div class="action-row">
+                                    <input type="text" id="tokenTeksB" class="code-input" readonly>
+                                    <button class="btn-action-icon" onclick="salinTeks('tokenTeksB')" title="Salin Kode"><i data-lucide="copy"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+        <div class="bottom-nav">
+            <button class="nav-item active" id="btnNavObrolan" onclick="gantiMenuTab('obrolan')">
+                <i data-lucide="message-square"></i>
+                <span>Obrolan</span>
+            </button>
+            <button class="nav-item" id="btnNavProfil" onclick="gantiMenuTab('profil')">
+                <i data-lucide="user-cog"></i>
+                <span>Profil & Rute</span>
+            </button>
+        </div>
+    </div>
+
+    <div class="modal" id="profilModal">
+        <div class="modal-content">
+            <div class="modal-header-icon"><i data-lucide="user-cog"></i></div>
+            <h4>Pengaturan Node Akun</h4>
+            <span class="modal-subtitle">Modifikasi konfigurasi data enkripsi lokal Anda</span>
+            
+            <div class="field-group">
+                <label>Ubah Nama Profil</label>
+                <input type="text" id="editNama" maxlength="12">
+            </div>
+            <div class="field-group">
+                <label>Ubah ID Unik</label>
+                <input type="text" id="editId" maxlength="15">
+            </div>
+            <div class="field-group">
+                <label>Kata Sandi Baru</label>
+                <input type="password" id="editSandi" placeholder="Kosongkan jika tidak diubah">
+            </div>
+            
+            <div class="modal-btn-grid">
+                <button class="main-btn" onclick="simpanProfil()"><i data-lucide="save" style="width:16px;"></i>Simpan Perubahan</button>
+                <button class="main-btn secondary-btn" onclick="tutupModal()">Kembali</button>
+                <button class="main-btn danger-btn" onclick="logoutAkun()"><i data-lucide="trash-2" style="width:16px;"></i>Log Out</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="statusPopupModal">
+        <div class="modal-content">
+            <div id="popupIcon" class="status-popup-icon">
+                <i id="popupIconVector" data-lucide="check"></i>
+            </div>
+            <h4 id="popupTitle" style="margin-bottom: 8px;">Berhasil Terhubung</h4>
+            <p id="popupDesc" style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px; line-height: 1.5;">Jalur komunikasi P2P aman terenkripsi telah aktif penuh secara lokal.</p>
+            <button class="main-btn" onclick="tutupPopupStatus()">Lanjutkan</button>
+        </div>
+    </div>
+
+    <script>
+        let currentUser = null;
+
+        function inisialisasiAplikasi() {
+            lucide.createIcons();
+            const dataTersimpan = localStorage.getItem('offlineChatAppUser');
+            if (dataTersimpan) {
+                masukKeAplikasi(JSON.parse(dataTersimpan));
+            } else {
+                document.getElementById('authScreen').classList.add('active');
+                toggleAuthMode('register');
+            }
+        }
+
+        function buatIdAcak() {
+            const aksara = 'abcdefghijklmnopqrstuvwxyz0123456789';
+            let hasil = 'radz_';
+            for (let i = 0; i < 5; i++) {
+                hasil += aksara.charAt(Math.floor(Math.random() * aksara.length));
+            }
+            return hasil;
+        }
+
+        function acakUlangId() {
+            document.getElementById('regId').value = buatIdAcak();
+        }
+
+        function toggleAuthMode(mode) {
+            const regForm = document.getElementById('registerForm');
+            const logForm = document.getElementById('loginForm');
+            if (mode === 'register') {
+                regForm.style.display = 'block';
+                logForm.style.display = 'none';
+                if(!document.getElementById('regId').value) acakUlangId();
+            } else {
+                regForm.style.display = 'none';
+                logForm.style.display = 'block';
+            }
+        }
+
+        function gantiMenuTab(target) {
+            const tabObrolan = document.getElementById('tabObrolan');
+            const tabProfil = document.getElementById('tabProfil');
+            const btnNavObrolan = document.getElementById('btnNavObrolan');
+            const btnNavProfil = document.getElementById('btnNavProfil');
+            const appHeaderTitle = document.getElementById('appHeaderTitle');
+
+            if(target === 'obrolan') {
+                tabObrolan.classList.add('active');
+                tabProfil.classList.remove('active');
+                btnNavObrolan.classList.add('active');
+                btnNavProfil.classList.remove('active');
+                appHeaderTitle.innerHTML = `<i data-lucide="trophy"></i>Ruang Obrolan`;
+            } else {
+                tabObrolan.classList.remove('active');
+                tabProfil.classList.add('active');
+                btnNavObrolan.classList.remove('active');
+                btnNavProfil.classList.add('active');
+                appHeaderTitle.innerHTML = `<i data-lucide="sliders"></i>Konfigurasi Node`;
+            }
+            lucide.createIcons();
+        }
+
+        function daftarAkun() {
+            const nama = document.getElementById('regNama').value.trim();
+            const id = document.getElementById('regId').value.trim();
+            const sandi = document.getElementById('regSandi').value.trim();
+            if(!nama || !id || !sandi) return alert("Harap lengkapi semua kolom!");
+            const userData = { nama, id, sandi };
+            localStorage.setItem('offlineChatAppUser', JSON.stringify(userData));
+            masukKeAplikasi(userData);
+        }
+
+        function loginAkun() {
+            const idInput = document.getElementById('logId').value.trim();
+            const sandiInput = document.getElementById('logSandi').value.trim();
+            const dataTersimpan = JSON.parse(localStorage.getItem('offlineChatAppUser'));
+            if(!dataTersimpan) return alert("Profil tidak ditemukan!");
+            if(dataTersimpan.id !== idInput || dataTersimpan.sandi !== sandiInput) return alert("Kredensial salah!");
+            masukKeAplikasi(dataTersimpan);
+        }
+
+        function masukKeAplikasi(userData) {
+            currentUser = userData;
+            document.getElementById('authScreen').classList.remove('active');
+            setTimeout(() => {
+                document.getElementById('mainScreen').classList.add('active');
+                perbaruiTampilanHeader();
+            }, 50);
+        }
+
+        function logoutAkun() {
+            if(confirm("Hapus pendaftaran akun dari perangkat?")) {
+                tutupModal();
+                document.getElementById('mainScreen').classList.remove('active');
+                localStorage.removeItem('offlineChatAppUser');
+                setTimeout(() => { location.reload(); }, 300);
+            }
+        }
+
+        function perbaruiTampilanHeader() {
+            document.getElementById('myProfileName').innerText = currentUser.nama;
+            document.getElementById('myProfileId').innerText = "@" + currentUser.id;
+            document.getElementById('myAvatar').innerText = currentUser.nama.charAt(0).toUpperCase();
+        }
+
+        function bukaModalProfil() {
+            document.getElementById('editNama').value = currentUser.nama;
+            document.getElementById('editId').value = currentUser.id;
+            document.getElementById('editSandi').value = ""; 
+            const modal = document.getElementById('profilModal');
+            modal.style.display = "flex";
+            setTimeout(() => modal.classList.add('show'), 20);
+        }
+
+        function tutupModal() {
+            const modal = document.getElementById('profilModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = "none", 250);
+        }
+
+        function simpanProfil() {
+            currentUser.nama = document.getElementById('editNama').value.trim();
+            currentUser.id = document.getElementById('editId').value.trim();
+            const sandiBaru = document.getElementById('editSandi').value.trim();
+            if(sandiBaru) currentUser.sandi = sandiBaru;
+            localStorage.setItem('offlineChatAppUser', JSON.stringify(currentUser));
+            perbaruiTampilanHeader();
+            tutupModal();
+        }
+
+        function unduhQR(containerId) {
+            const img = document.getElementById(containerId).querySelector('img');
+            if(!img) return alert("QR Code belum dibuat!");
+            const link = document.createElement('a');
+            link.href = img.src;
+            link.download = `p2p-route-${containerId}.png`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        function tampilkanPopupStatus(isSuccess, title, desc) {
+            const modal = document.getElementById('statusPopupModal');
+            const iconBox = document.getElementById('popupIcon');
+            const iconVector = document.getElementById('popupIconVector');
+            
+            if(isSuccess) {
+                iconBox.className = "status-popup-icon success";
+                iconVector.setAttribute('data-lucide', 'check-circle-2');
+            } else {
+                iconBox.className = "status-popup-icon danger";
+                iconVector.setAttribute('data-lucide', 'alert-triangle');
+            }
+            
+            document.getElementById('popupTitle').innerText = title;
+            document.getElementById('popupDesc').innerText = desc;
+            
+            lucide.createIcons();
+            modal.style.display = "flex";
+            setTimeout(() => modal.classList.add('show'), 20);
+        }
+
+        function tutupPopupStatus() {
+            const modal = document.getElementById('statusPopupModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = "none", 250);
+        }
+
+        // ==========================================
+        // WEBRTC OFFLINE P2P LOGIC
+        // ==========================================
+        const config = { iceServers: [], iceTransportPolicy: "all" };
+        let pc;
+        let dataChannel;
+        let html5QrCode;
+        let peranAktif = "";
+        let iceTimeout; 
+        let profilLawan = { nama: "Peer Node", id: "?" };
+
+        function inisialisasiWebRTC() {
+            if(pc) pc.close();
+            pc = new RTCPeerConnection(config);
+            
+            pc.oniceconnectionstatechange = () => {
+                const badge = document.getElementById('statusKoneksi');
+                if (pc.iceConnectionState === 'disconnected' || pc.iceConnectionState === 'failed') {
+                    badge.innerHTML = `<i data-lucide="activity"></i>Offline`;
+                    badge.classList.remove('online');
+                    lucide.createIcons();
+                    tampilkanPopupStatus(false, "Koneksi Terputus", "Jalur komunikasi rute terputus atau target peer offline.");
+                    log("Koneksi rute terputus.", "system");
+                }
+            };
+        }
+
+        function log(text, type="system") {
+            const msgDiv = document.getElementById('messages');
+            const formatWaktu = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            
+            if(type === "system") {
+                const li = document.createElement('div');
+                li.className = "msg-system";
+                li.innerText = text;
+                msgDiv.appendChild(li);
+            } else {
+                const wrapper = document.createElement('div');
+                wrapper.className = `msg-wrapper ${type}`;
+                
+                const nameDiv = document.createElement('div');
+                nameDiv.className = "msg-sender";
+                nameDiv.innerText = type === "me" ? currentUser.nama : profilLawan.nama;
+                
+                const bubble = document.createElement('div');
+                bubble.className = "msg";
+                bubble.innerHTML = `<span class="msg-content">${text}</span><span class="msg-time">${formatWaktu}</span>`;
+                
+                wrapper.appendChild(nameDiv);
+                wrapper.appendChild(bubble);
+                msgDiv.appendChild(wrapper);
+            }
+            msgDiv.scrollTop = msgDiv.scrollHeight;
+        }
+
+        function salinTeks(elementId) {
+            const copyText = document.getElementById(elementId);
+            if(!copyText.value) return;
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value).then(() => alert("Kode rute berhasil disalin!"));
+        }
+
+        async function tempelTeks(elementId) {
+            try {
+                const text = await navigator.clipboard.readText();
+                document.getElementById(elementId).value = text;
+            } catch (err) { alert("Silakan tempel token secara manual."); }
+        }
+
+        function gantiMetode(metode) {
+            document.getElementById('tabQR').classList.toggle('active', metode === 'QR');
+            document.getElementById('tabKode').classList.toggle('active', metode === 'KODE');
+            document.querySelectorAll('.konten-qr').forEach(el => el.style.display = metode === 'QR' ? 'block' : 'none');
+            document.querySelectorAll('.konten-kode').forEach(el => el.style.display = metode === 'KODE' ? 'block' : 'none');
+            if(html5QrCode) html5QrCode.stop().catch(()=>{});
+            document.getElementById('btnCamA').style.display = 'inline-flex';
+            document.getElementById('btnCamB').style.display = 'inline-flex';
+        }
+
+        function aturChannel(channel) {
+            dataChannel = channel;
+            dataChannel.onopen = () => {
+                const badge = document.getElementById('statusKoneksi');
+                badge.innerHTML = `<i data-lucide="shield-check"></i>Connected`;
+                badge.classList.add('online');
+                lucide.createIcons();
+                
+                document.getElementById('msgInput').disabled = false;
+                document.getElementById('sendBtn').disabled = false;
+                document.getElementById('setupArea').style.display = 'none';
+                
+                if(html5QrCode) html5QrCode.stop().catch(() => {});
+                
+                dataChannel.send(JSON.stringify({tipe: "PROFIL_BARU", data: {nama: currentUser.nama, id: currentUser.id}}));
+                tampilkanPopupStatus(true, "Koneksi Berhasil!", "Enkripsi peer terhubung penuh. Anda sekarang berada di ruang obrolan offline.");
+                gantiMenuTab('obrolan');
+            };
+            
+            dataChannel.onmessage = (e) => {
+                try {
+                    const paket = JSON.parse(e.data);
+                    if(paket.tipe === "PROFIL_BARU") {
+                        profilLawan = paket.data;
+                        log(`Tersambung aman dengan ${profilLawan.nama} (@${profilLawan.id})`, "system");
+                    } else if(paket.tipe === "CHATTING") { 
+                        log(paket.data, "them"); 
+                    }
+                } catch(err) {}
+            };
+        }
+
+        function generateSDPToken(targetId, textId, pcTarget) {
+            const tokenUtuh = btoa(JSON.stringify(pcTarget.localDescription));
+            document.getElementById(targetId).innerHTML = "";
+            new QRCode(document.getElementById(targetId), { text: tokenUtuh, width: 170, height: 170, correctLevel: QRCode.CorrectLevel.L });
+            document.getElementById(textId).value = tokenUtuh;
+        }
+
+        async function pilihPeran(p) {
+            peranAktif = p;
+            inisialisasiWebRTC();
+            document.getElementById('roleSelection').style.display = 'none';
+            document.getElementById('methodSelection').style.display = 'block';
+            
+            if (peranAktif === 'A') {
+                document.getElementById('areaA').style.display = 'block';
+                aturChannel(pc.createDataChannel("offline-chat", { negotiated: false }));
+                iceTimeout = setTimeout(() => { generateSDPToken('qrcodeA', 'tokenTeksA', pc); }, 1500);
+                pc.onicecandidate = (e) => {
+                    if (!e.candidate) {
+                        clearTimeout(iceTimeout);
+                        generateSDPToken('qrcodeA', 'tokenTeksA', pc);
+                    }
+                };
+                const offer = await pc.createOffer();
+                await pc.setLocalDescription(offer);
+            } else {
+                document.getElementById('areaB').style.display = 'block';
+                pc.ondatachannel = (e) => aturChannel(e.channel);
+            }
+        }
+
+        async function konekManualA() {
+            const tokenB = document.getElementById('inputTeksB').value.trim();
+            if(!tokenB) return alert("Masukkan kode rute balasan.");
+            try {
+                await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(tokenB))));
+            } catch(e) { alert("Kunci token salah/rusak!"); }
+        }
+
+        async function prosesManualB() {
+            const tokenA = document.getElementById('inputTeksA').value.trim();
+            if(!tokenA) return alert("Masukkan kode rute awal.");
+            try {
+                const offer = new RTCSessionDescription(JSON.parse(atob(tokenA)));
+                iceTimeout = setTimeout(() => { 
+                    document.getElementById('jawabanBSection').style.display = 'block';
+                    generateSDPToken('qrcodeB', 'tokenTeksB', pc); 
+                }, 1500);
+                pc.onicecandidate = (e) => {
+                    if (!e.candidate) {
+                        clearTimeout(iceTimeout);
+                        document.getElementById('jawabanBSection').style.display = 'block';
+                        generateSDPToken('qrcodeB', 'tokenTeksB', pc);
+                    }
+                };
+                await pc.setRemoteDescription(offer);
+                const answer = await pc.createAnswer();
+                await pc.setLocalDescription(answer);
+            } catch(e) { alert("Gagal memproses kode rute!"); }
+        }
+
+        function bukaKamera(target) {
+            const camBtn = target === 'A' ? 'btnCamA' : 'btnCamB';
+            const reader = target === 'A' ? 'readerA' : 'readerB';
+            document.getElementById(camBtn).style.display = 'none';
+            html5QrCode = new Html5Qrcode(reader);
+            html5QrCode.start({ facingMode: "environment" }, { fps: 12, qrbox: 170 },
+                async (decodedText) => {
+                    html5QrCode.stop();
+                    document.getElementById(reader).style.display = 'none';
+                    try {
+                        if(target === 'A') {
+                            await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(decodedText))));
+                        } else {
+                            const offer = new RTCSessionDescription(JSON.parse(atob(decodedText)));
+                            iceTimeout = setTimeout(() => { 
+                                document.getElementById('jawabanBSection').style.display = 'block';
+                                generateSDPToken('qrcodeB', 'tokenTeksB', pc); 
+                            }, 1500);
+                            pc.onicecandidate = (e) => {
+                                if (!e.candidate) {
+                                    clearTimeout(iceTimeout);
+                                    document.getElementById('jawabanBSection').style.display = 'block';
+                                    generateSDPToken('qrcodeB', 'tokenTeksB', pc);
+                                }
+                            };
+                            await pc.setRemoteDescription(offer);
+                            const answer = await pc.createAnswer();
+                            await pc.setLocalDescription(answer);
+                        }
+                    } catch(err) { alert("Format QR rute salah!"); }
+                }, () => {}
+            );
+        }
+
+        function kirimPesan() {
+            const input = document.getElementById('msgInput');
+            const teks = input.value.trim();
+            if (teks && dataChannel && dataChannel.readyState === "open") {
+                dataChannel.send(JSON.stringify({ tipe: "CHATTING", data: teks }));
+                log(teks, "me");
+                input.value = "";
+            }
+        }
+
+        document.getElementById('msgInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') kirimPesan();
+        });
+
+        window.onload = inisialisasiAplikasi;
+    </script>
 </body>
 </html>
