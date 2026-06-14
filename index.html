@@ -7,6 +7,7 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
     <style>
         :root {
             /* Tema FIFA World Cup 2026 Premium */
@@ -35,7 +36,6 @@
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
-        /* Layout Pembungkus Global Komputer/PC */
         body { 
             background-color: #010a08; 
             background-image: radial-gradient(circle at center, #042f24 0%, #010a08 100%);
@@ -48,7 +48,6 @@
             overflow: hidden; 
         }
 
-        /* Container Simulator Khusus di PC & Pas di Resolusi HP */
         .device-container {
             width: 100%;
             max-width: 450px;
@@ -62,8 +61,7 @@
             transition: all 0.3s ease;
         }
 
-        /* Responsivitas Desktop: Berubah menjadi Frame Gadget Modis saat dibuka di PC */
-        @media min-width: 480px) {
+        @media (min-width: 480px) {
             .device-container {
                 height: 85vh;
                 max-height: 850px;
@@ -73,7 +71,6 @@
             }
         }
         
-        /* Mengamankan Setiap Screen Layar */
         .screen-wrapper {
             position: relative;
             flex: 1;
@@ -99,7 +96,6 @@
         }
         .screen.active { opacity: 1; transform: translate3d(0, 0, 0); pointer-events: auto; z-index: 5; }
 
-        /* --- TAMPILAN LOGIN & DAFTAR (PRESISI TEPI LAYAR) --- */
         .auth-container { display: flex; flex-direction: column; justify-content: center; padding: 20px; height: 100%; background: radial-gradient(circle at top, #065f46 0%, var(--bg-body) 100%); overflow-y: auto; }
         .auth-box { 
             background: rgba(4, 47, 36, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
@@ -120,13 +116,11 @@
             background: var(--surface-input); color: white; font-size: 14px; outline: none; transition: all 0.2s ease;
         }
         .auth-box input:focus, .modal-content input:focus, .code-input:focus { border-color: var(--trophy-gold); background: #010d0a; box-shadow: none; }
+        .input-readonly { background: rgba(255,255,255,0.03) !important; color: #94a3b8 !important; border-color: var(--glass-border) !important; cursor: not-allowed; }
         
-        .btn-rand { background: var(--surface-card); border: 1px solid var(--glass-border); color: var(--text-main); padding: 0 16px; border-radius: 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
-        .btn-rand:hover { background: var(--glass-border-active); color: var(--trophy-gold); }
         .toggle-auth { color: var(--text-muted); font-size: 13px; cursor: pointer; display: inline-block; margin-top: 24px; transition: color 0.2s ease; font-weight: 500; text-decoration: none; }
         .toggle-auth:hover { color: var(--trophy-gold); }
 
-        /* --- IPHONE FLOATING CARD HEADER (PRESISI TEPI) --- */
         header { 
             background: var(--ios-glass-bg);
             backdrop-filter: var(--ios-glass-blur);
@@ -144,8 +138,8 @@
         
         .badge-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
         .badge-status.online { background: rgba(16, 185, 129, 0.15); color: #fff; border: 1px solid var(--success); box-shadow: none; }
+        .badge-status.internet { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid #3b82f6; }
 
-        /* --- BOTTOM NAVIGATION BAR --- */
         .bottom-nav { 
             display: flex; 
             background: var(--ios-glass-bg);
@@ -167,11 +161,9 @@
         .nav-item.active { color: var(--trophy-gold); background: rgba(251, 191, 36, 0.1); }
         .nav-item.active i { opacity: 1; color: var(--trophy-gold); }
 
-        /* --- KONTEN TAB --- */
         .tab-content { flex: 1; display: none; flex-direction: column; overflow-y: auto; padding: 8px 16px; }
         .tab-content.active { display: flex; }
 
-        /* Profil Section */
         .profile-hero-card {
             background: linear-gradient(135deg, var(--surface-card) 0%, var(--surface) 100%);
             border: 1px solid var(--glass-border); border-radius: 20px; padding: 20px; display: flex; align-items: center; gap: 16px; margin-bottom: 16px;
@@ -188,14 +180,13 @@
         .stat-card label { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 700; display: block; margin-bottom: 4px; }
         .stat-card span { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
-        /* KARTU INFORMASI TERHUBUNG PENGGUNA */
         .connected-card {
             background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
             border: 1px solid var(--primary);
             border-radius: 18px;
             padding: 16px;
             margin-bottom: 16px;
-            display: none; /* Muncul via JS saat P2P aktif */
+            display: none; 
             align-items: center;
             gap: 14px;
             animation: messageFadeIn 0.4s var(--transition-smooth);
@@ -207,7 +198,6 @@
         .connected-info h6 { font-size: 11px; color: #10b981; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .connected-info p { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
 
-        /* PREMIUM APP CONFIG MENUS */
         .app-settings-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
         .cool-setting-card {
             background: linear-gradient(135deg, rgba(6, 64, 50, 0.6) 0%, rgba(4, 47, 36, 0.4) 100%);
@@ -239,7 +229,6 @@
         .sub-tab-btn { flex: 1; background: transparent; color: var(--text-muted); border: none; padding: 10px; border-radius: 9px; font-size: 12px; font-weight: 600; transition: all 0.2s ease; }
         .sub-tab-btn.active { background: var(--surface-card); color: var(--text-main); border: 1px solid var(--glass-border); }
         
-        /* --- BUTTON SYSTEM (PREMIUM - NO GLOW - NO SHADOW) --- */
         button { font-size: 13.5px; font-weight: 600; transition: all 0.2s var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; }
         button.main-btn { background: var(--primary); color: white; padding: 14px 20px; border-radius: 16px; width: 100%; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; box-shadow: none !important; }
         button.main-btn:hover { background: #059669; transform: none; }
@@ -247,15 +236,15 @@
         button.secondary-btn:hover { background: rgba(255,255,255,0.12); }
         button.danger-btn { background: #e11d48; color: white; padding: 14px 20px; border-radius: 16px; width: 100%; font-weight: 700; border: none; box-shadow: none !important; }
         button.danger-btn:hover { background: #be123c; }
+        button.small-btn { padding: 8px 12px; font-size: 11px; border-radius: 10px; width: auto; }
+        button.small-btn i { width: 14px; height: 14px; }
         
-        /* MODERN COPIED & PASTE ICON BUTTONS */
         .action-row { display: flex; gap: 8px; align-items: center; width: 100%; }
         .btn-action-icon { width: 50px; height: 50px; border-radius: 16px; border: 1px solid var(--glass-border); background: var(--surface-card); color: var(--text-main); display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s ease; }
         .btn-action-icon:hover { background: var(--glass-border-active); color: var(--trophy-gold); border-color: var(--trophy-gold); }
         .btn-action-icon:active { transform: scale(0.95); }
         .btn-action-icon i { width: 20px; height: 20px; }
 
-        /* QR BOX & DOWNLOAD BUTTON */
         .qr-wrapper-card { background: var(--surface-input); border: 1px solid var(--glass-border); border-radius: 20px; padding: 16px; text-align: center; margin: 10px 0; }
         .qr-container { display: flex; justify-content: center; padding: 14px; background: white; border-radius: 18px; width: max-content; margin: 0 auto 12px auto; }
         .btn-download-qr { background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.2); color: var(--trophy-gold); padding: 8px 14px; border-radius: 100px; font-size: 11px; font-weight: 700; text-transform: uppercase; display: inline-flex; align-items: center; gap: 6px; }
@@ -263,7 +252,6 @@
 
         #readerA, #readerB { width: 100%; max-width: 240px; border-radius: 18px; overflow: hidden; margin: 0 auto; border: 1px solid var(--glass-border); }
 
-        /* --- WORLD CUP 2026 STADIUM CHAT CONTAINER --- */
         .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #011c15; position: relative; }
         .chat-container::before {
             content: ''; position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
@@ -281,7 +269,6 @@
         
         .msg-system { align-self: center; background: rgba(2, 44, 34, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); padding: 6px 14px; border-radius: 100px; font-size: 11px; color: var(--trophy-gold); font-weight: 600; letter-spacing: 0.2px; text-align: center; max-width: 90%; }
         
-        /* --- SUPER DUPER COOL MESSAGE CARDS (NO GLOW - FLAT HIGH DEFINITION) --- */
         .msg-wrapper { 
             display: flex; 
             flex-direction: column; 
@@ -306,31 +293,19 @@
             word-break: break-all; 
             line-height: 1.5; 
             position: relative; 
-            box-shadow: none !important; /* Total anti-glow & anti-shadow */
+            box-shadow: none !important;
             transition: all 0.2s ease;
             backdrop-filter: blur(8px);
             -webkit-backdrop-filter: blur(8px);
         }
         
-        .msg-wrapper.me .msg { 
-            background: #059669; 
-            border-bottom-right-radius: 4px; 
-            color: white; 
-            border: 1px solid rgba(255, 255, 255, 0.1); 
-        }
-        
-        .msg-wrapper.them .msg { 
-            background: #115e59; 
-            border-bottom-left-radius: 4px; 
-            border: 1px solid rgba(255, 255, 255, 0.05); 
-            color: #f1f5f9; 
-        }
+        .msg-wrapper.me .msg { background: #059669; border-bottom-right-radius: 4px; color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .msg-wrapper.them .msg { background: #115e59; border-bottom-left-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); color: #f1f5f9; }
         
         .msg-content { display: block; letter-spacing: -0.1px; }
         .msg-time { font-size: 10px; opacity: 0.6; margin-top: 6px; display: block; text-align: right; font-weight: 600; letter-spacing: 0.2px; }
         .msg-wrapper.me .msg-time { color: rgba(255, 255, 255, 0.7); }
 
-        /* --- INPUT BOX --- */
         .input-box { 
             display: flex; gap: 10px; padding: 12px 16px; 
             background: var(--ios-glass-bg);
@@ -349,7 +324,6 @@
         .send-btn:disabled { background: var(--surface-input); color: var(--text-muted); border: 1px solid var(--glass-border); cursor: not-allowed; }
         .send-btn i { width: 18px; height: 18px; }
 
-        /* --- MODAL PENGATURAN (ANTI GLOW BUTTONS) --- */
         .modal { 
             display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 13, 10, 0.85); 
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); justify-content: center; align-items: center; z-index: 1000;
@@ -373,19 +347,24 @@
         .modal-content .field-group { text-align: left; margin-bottom: 18px; }
         .modal-content label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; display: block; margin-bottom: 8px; letter-spacing: 0.3px; padding-left: 2px; }
 
-        /* GRID TOMBOL KHUSUS: SIMPAN, KEMBALI, LOGOUT (FLAT MODERN - NO GLOW) */
-        .modal-btn-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin-top: 24px;
-        }
+        .modal-btn-grid { display: flex; flex-direction: column; gap: 10px; margin-top: 24px; }
 
-        /* Icon State Pop-up */
         .status-popup-icon { width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; }
         .status-popup-icon.success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
         .status-popup-icon.danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid var(--danger); }
         .status-popup-icon i { width: 28px; height: 28px; }
+
+        /* LIST ITEM PERTEMANAN (FLAT STYLES) */
+        .friend-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
+        .friend-item {
+            background: var(--surface); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px 14px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .friend-info-left { display: flex; align-items: center; gap: 10px; }
+        .friend-avatar { width: 36px; height: 36px; border-radius: 12px; background: rgba(255,255,255,0.05); color: var(--text-muted); display: flex; align-items: center; justify-content: center; font-size: 16px; font-weight: 700; }
+        .friend-details h5 { font-size: 13.5px; font-weight: 700; color: #fff; }
+        .friend-details p { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+        .friend-actions { display: flex; gap: 6px; }
 
         @keyframes messageFadeIn {
             from { opacity: 0; transform: translate3d(0, 10px, 0); }
@@ -410,11 +389,8 @@
                             <input type="text" id="regNama" placeholder="Nama panggilan Anda..." maxlength="12">
                         </div>
                         <div class="input-wrapper">
-                            <label>ID Unik Akun</label>
-                            <div class="input-group-action">
-                                <input type="text" id="regId" placeholder="Membangun kunci ID..." maxlength="15">
-                                <button class="btn-rand" type="button" onclick="acakUlangId()"><i data-lucide="refresh-cw" style="width:14px;"></i>Acak</button>
-                            </div>
+                            <label>ID Unik Akun (Otomatis Sistem)</label>
+                            <input type="text" id="regId" class="input-readonly" readonly placeholder="Membangun kunci ID...">
                         </div>
                         <div class="input-wrapper">
                             <label>Kata Sandi Keamanan</label>
@@ -463,6 +439,36 @@
                     </div>
                 </div>
 
+                <div id="tabTeman" class="tab-content">
+                    <div class="setup-box" style="margin-bottom: 0;">
+                        <div class="sub-tab-group" style="margin-bottom: 16px;">
+                            <button class="sub-tab-btn active" id="btnSubCari" onclick="gantiSubTabTeman('cari')">Cari ID</button>
+                            <button class="sub-tab-btn" id="btnSubDaftar" onclick="gantiSubTabTeman('daftar')">Daftar Kontak</button>
+                        </div>
+
+                        <div id="areaCariTeman">
+                            <div class="input-wrapper" style="margin-bottom: 12px;">
+                                <label>Cari ID Teman Online</label>
+                                <div class="action-row">
+                                    <input type="text" id="inputCariId" placeholder="Contoh: lok_x8y2z" style="text-transform: lowercase;">
+                                    <button class="btn-action-icon" onclick="cariDanTambahTeman()" title="Tambah Teman"><i data-lucide="user-plus"></i></button>
+                                </div>
+                            </div>
+                            <hr style="border:0; border-top:1px solid var(--glass-border); margin:16px 0;">
+                            <h3 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Permintaan Masuk</h3>
+                            <div id="listPermintaanMasuk" class="friend-list">
+                                <p style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">Belum ada permintaan</p>
+                            </div>
+                        </div>
+
+                        <div id="areaDaftarKontak" style="display: none;">
+                            <h3 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Kontak Tersimpan</h3>
+                            <div id="listKontakTeman" class="friend-list">
+                                </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div id="tabProfil" class="tab-content">
                     
                     <div class="connected-card" id="connectionInfoCard">
@@ -485,50 +491,15 @@
                     </div>
 
                     <div class="dashboard-stats">
-                        <div class="stat-card"><label>Core Engine</label><span>WebRTC</span></div>
+                        <div class="stat-card"><label>Sistem ID</label><span>Otomatis</span></div>
                         <div class="stat-card"><label>Trafik</label><span>0 KB</span></div>
                         <div class="stat-card"><label>Node Status</label><span>Aman</span></div>
                     </div>
 
-                    <div class="app-settings-cards">
-                        <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Info Aplikasi', 'Premium World Cup 2026 P2P Chat v1.0.0. Aplikasi komunikasi peer-to-peer tanpa server perantara, menjamin privasi chatting Anda secara instan dan aman.')">
-                            <div class="cool-card-left">
-                                <div class="cool-card-icon"><i data-lucide="info"></i></div>
-                                <div class="cool-card-text">
-                                    <h5>Info Aplikasi & Penjelasan</h5>
-                                    <p>Detail arsitektur enkripsi node lokal</p>
-                                </div>
-                            </div>
-                            <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
-                        </div>
-
-                        <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Kebijakan Privasi', 'Aplikasi ini menggunakan teknologi WebRTC P2P. Seluruh riwayat obrolan dan data profil Anda disimpan terenkripsi di penyimpanan lokal (localStorage) perangkat Anda. Tidak ada data yang dikirim ke server luar.')">
-                            <div class="cool-card-left">
-                                <div class="cool-card-icon"><i data-lucide="shield-alert"></i></div>
-                                <div class="cool-card-text">
-                                    <h5>Kebijakan Privasi</h5>
-                                    <p>Keamanan data kedaulatan lokal</p>
-                                </div>
-                            </div>
-                            <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
-                        </div>
-
-                        <div class="cool-setting-card" onclick="tampilkanPopupStatus(true, 'Tutorial Koneksi', '1. HP 1 pilih Buat Kamar Rute.\n2. HP 2 pilih Gabung Kamar Aktif.\n3. Gunakan kamera untuk scan QR Code satu sama lain secara bergantian atau salin kode manual untuk sinkronisasi jalur enkripsi.')">
-                            <div class="cool-card-left">
-                                <div class="cool-card-icon"><i data-lucide="help-circle"></i></div>
-                                <div class="cool-card-text">
-                                    <h5>Tutorial Sinkronisasi</h5>
-                                    <p>Panduan langkah menghubungkan dua device</p>
-                                </div>
-                            </div>
-                            <div class="cool-card-arrow"><i data-lucide="chevron-right" style="width:16px;"></i></div>
-                        </div>
-                    </div>
-
                     <div class="setup-box" id="setupArea">
                         <div id="roleSelection">
-                            <h3>Konfigurasi Jalur Enkripsi</h3>
-                            <p style="margin-top: 4px; margin-bottom: 14px;">Sambungkan kedua perangkat ke jaringan lokal nirikabel yang sama untuk memulai pertukaran sinyal.</p>
+                            <h3>Konfigurasi Jalur (Offline Mode)</h3>
+                            <p style="margin-top: 4px; margin-bottom: 14px;">Sambungkan ke jaringan yang sama jika tidak menggunakan fitur Teman online.</p>
                             <button class="main-btn" onclick="pilihPeran('A')" style="margin-bottom: 8px;"><i data-lucide="plus-circle" style="width:16px;"></i>Buat Kamar Rute (HP 1)</button>
                             <button class="main-btn secondary-btn" onclick="pilihPeran('B')"><i data-lucide="link-2" style="width:16px;"></i>Gabung Kamar Aktif (HP 2)</button>
                         </div>
@@ -602,7 +573,6 @@
                                     </div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
@@ -612,9 +582,13 @@
                         <i data-lucide="message-square"></i>
                         <span>Obrolan</span>
                     </button>
+                    <button class="nav-item" id="btnNavTeman" onclick="gantiMenuTab('teman')">
+                        <i data-lucide="users"></i>
+                        <span>Teman</span>
+                    </button>
                     <button class="nav-item" id="btnNavProfil" onclick="gantiMenuTab('profil')">
                         <i data-lucide="user-cog"></i>
-                        <span>Profil & Rute</span>
+                        <span>Profil</span>
                     </button>
                 </div>
             </div>
@@ -626,15 +600,15 @@
         <div class="modal-content">
             <div class="modal-header-icon"><i data-lucide="user-cog"></i></div>
             <h4>Pengaturan Node Akun</h4>
-            <span class="modal-subtitle">Modifikasi konfigurasi data enkripsi lokal Anda</span>
+            <span class="modal-subtitle">Modifikasi konfigurasi data lokal Anda</span>
             
             <div class="field-group">
                 <label>Ubah Nama Profil</label>
                 <input type="text" id="editNama" maxlength="12">
             </div>
             <div class="field-group">
-                <label>Ubah ID Unik</label>
-                <input type="text" id="editId" maxlength="15">
+                <label>ID Unik (Permanen)</label>
+                <input type="text" id="editId" class="input-readonly" readonly>
             </div>
             <div class="field-group">
                 <label>Kata Sandi Baru</label>
@@ -655,16 +629,20 @@
                 <i id="popupIconVector" data-lucide="check"></i>
             </div>
             <h4 id="popupTitle" style="margin-bottom: 8px;">Berhasil Terhubung</h4>
-            <p id="popupDesc" style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px; line-height: 1.5;">Jalur komunikasi P2P aman terenkripsi telah aktif penuh secara lokal.</p>
+            <p id="popupDesc" style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px; line-height: 1.5;">Jalur komunikasi aman telah aktif penuh.</p>
             <button class="main-btn" onclick="tutupPopupStatus()">Lanjutkan</button>
         </div>
     </div>
 
     <script>
         let currentUser = null;
+        let kontakTersimpan = [];
+        let peer;
+        let onlineConnectionMap = {};
 
         function inisialisasiAplikasi() {
             lucide.createIcons();
+            muatKontak();
             const dataTersimpan = localStorage.getItem('offlineChatAppUser');
             if (dataTersimpan) {
                 masukKeAplikasi(JSON.parse(dataTersimpan));
@@ -674,17 +652,14 @@
             }
         }
 
-        function buatIdAcak() {
+        // Generator ID Otomatis
+        function buatIdOtomatis() {
             const aksara = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            let hasil = 'radz_';
+            let hasil = 'lok_';
             for (let i = 0; i < 5; i++) {
                 hasil += aksara.charAt(Math.floor(Math.random() * aksara.length));
             }
             return hasil;
-        }
-
-        function acakUlangId() {
-            document.getElementById('regId').value = buatIdAcak();
         }
 
         function toggleAuthMode(mode) {
@@ -693,7 +668,9 @@
             if (mode === 'register') {
                 regForm.style.display = 'block';
                 logForm.style.display = 'none';
-                if(!document.getElementById('regId').value) acakUlangId();
+                if(!document.getElementById('regId').value) {
+                    document.getElementById('regId').value = buatIdOtomatis();
+                }
             } else {
                 regForm.style.display = 'none';
                 logForm.style.display = 'block';
@@ -701,26 +678,37 @@
         }
 
         function gantiMenuTab(target) {
-            const tabObrolan = document.getElementById('tabObrolan');
-            const tabProfil = document.getElementById('tabProfil');
-            const btnNavObrolan = document.getElementById('btnNavObrolan');
-            const btnNavProfil = document.getElementById('btnNavProfil');
+            const tabs = ['obrolan', 'teman', 'profil'];
             const appHeaderTitle = document.getElementById('appHeaderTitle');
 
-            if(target === 'obrolan') {
-                tabObrolan.classList.add('active');
-                tabProfil.classList.remove('active');
-                btnNavObrolan.classList.add('active');
-                btnNavProfil.classList.remove('active');
-                appHeaderTitle.innerHTML = `<i data-lucide="trophy"></i>Ruang Obrolan`;
-            } else {
-                tabObrolan.classList.remove('active');
-                tabProfil.classList.add('active');
-                btnNavObrolan.classList.remove('active');
-                btnNavProfil.classList.add('active');
-                appHeaderTitle.innerHTML = `<i data-lucide="sliders"></i>Konfigurasi Node`;
-            }
+            tabs.forEach(t => {
+                document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+                document.getElementById('btnNav' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
+            });
+
+            document.getElementById('tab' + target.charAt(0).toUpperCase() + target.slice(1)).classList.add('active');
+            document.getElementById('btnNav' + target.charAt(0).toUpperCase() + target.slice(1)).classList.add('active');
+
+            if(target === 'obrolan') appHeaderTitle.innerHTML = `<i data-lucide="trophy"></i>Ruang Obrolan`;
+            else if(target === 'teman') appHeaderTitle.innerHTML = `<i data-lucide="users"></i>Daftar Teman`;
+            else appHeaderTitle.innerHTML = `<i data-lucide="sliders"></i>Konfigurasi Node`;
+            
             lucide.createIcons();
+        }
+
+        function gantiSubTabTeman(target) {
+            if(target === 'cari') {
+                document.getElementById('btnSubCari').classList.add('active');
+                document.getElementById('btnSubDaftar').classList.remove('active');
+                document.getElementById('areaCariTeman').style.display = 'block';
+                document.getElementById('areaDaftarKontak').style.display = 'none';
+            } else {
+                document.getElementById('btnSubCari').classList.remove('active');
+                document.getElementById('btnSubDaftar').classList.add('active');
+                document.getElementById('areaCariTeman').style.display = 'none';
+                document.getElementById('areaDaftarKontak').style.display = 'block';
+                renderDaftarKontak();
+            }
         }
 
         function daftarAkun() {
@@ -748,6 +736,7 @@
             setTimeout(() => {
                 document.getElementById('mainScreen').classList.add('active');
                 perbaruiTampilanHeader();
+                inisialisasiOnlinePeerJS(); // Inisialisasi Fitur Online Otomatis
             }, 50);
         }
 
@@ -783,7 +772,6 @@
 
         function simpanProfil() {
             currentUser.nama = document.getElementById('editNama').value.trim();
-            currentUser.id = document.getElementById('editId').value.trim();
             const sandiBaru = document.getElementById('editSandi').value.trim();
             if(sandiBaru) currentUser.sandi = sandiBaru;
             localStorage.setItem('offlineChatAppUser', JSON.stringify(currentUser));
@@ -830,7 +818,178 @@
         }
 
         // ==========================================
-        // WEBRTC OFFLINE P2P LOGIC & SWIPE SYSTEM
+        // FITUR TEMAN (ONLINE PEERJS)
+        // ==========================================
+        function muatKontak() {
+            const cache = localStorage.getItem('p2p_contacts');
+            if(cache) kontakTersimpan = JSON.parse(cache);
+        }
+
+        function simpanKontakLocally() {
+            localStorage.setItem('p2p_contacts', JSON.stringify(kontakTersimpan));
+            renderDaftarKontak();
+        }
+
+        function renderDaftarKontak() {
+            const list = document.getElementById('listKontakTeman');
+            list.innerHTML = "";
+            if(kontakTersimpan.length === 0) {
+                list.innerHTML = '<p style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">Anda belum memiliki kontak teman.</p>';
+                return;
+            }
+            kontakTersimpan.forEach(k => {
+                list.innerHTML += `
+                    <div class="friend-item">
+                        <div class="friend-info-left">
+                            <div class="friend-avatar">${k.nama.charAt(0).toUpperCase()}</div>
+                            <div class="friend-details">
+                                <h5>${k.nama}</h5>
+                                <p>@${k.id}</p>
+                            </div>
+                        </div>
+                        <div class="friend-actions">
+                            <button class="main-btn small-btn" onclick="chatOnlineLangsung('${k.id}', '${k.nama}')"><i data-lucide="message-circle"></i> Chat</button>
+                        </div>
+                    </div>
+                `;
+            });
+            lucide.createIcons();
+        }
+
+        function inisialisasiOnlinePeerJS() {
+            peer = new Peer(currentUser.id); 
+            peer.on('open', (id) => {
+                const badge = document.getElementById('statusKoneksi');
+                badge.innerHTML = `<i data-lucide="globe"></i>Siap Online`;
+                badge.className = "badge-status internet";
+                lucide.createIcons();
+            });
+
+            peer.on('connection', (conn) => {
+                conn.on('data', (data) => {
+                    let paket;
+                    try { paket = JSON.parse(data); } catch(e) { paket = data; }
+
+                    if(paket.tipe === "REQ_TEMAN") {
+                        tambahUIRequestTeman(paket.data.id, paket.data.nama);
+                    } else if (paket.tipe === "ACC_TEMAN") {
+                        tampilkanPopupStatus(true, "Permintaan Diterima!", `${paket.data.nama} telah menerima pertemanan Anda.`);
+                        if(!kontakTersimpan.find(k => k.id === paket.data.id)) {
+                            kontakTersimpan.push(paket.data);
+                            simpanKontakLocally();
+                        }
+                    } else if (paket.tipe === "PROFIL_BARU") {
+                        // Terhubung dari request teman -> Obrolan
+                        aturKoneksiOnlineDataChannel(conn, paket.data);
+                    } else if (paket.tipe === "CHATTING") {
+                        log(paket.data, "them");
+                    }
+                });
+            });
+            
+            peer.on('error', (err) => {
+                console.log("Jaringan Peer terputus/error", err);
+            });
+        }
+
+        function cariDanTambahTeman() {
+            const targetId = document.getElementById('inputCariId').value.trim();
+            if(!targetId) return alert("Masukkan ID teman terlebih dahulu!");
+            if(targetId === currentUser.id) return alert("Anda tidak bisa menambahkan ID sendiri.");
+            if(kontakTersimpan.find(k => k.id === targetId)) return alert("ID ini sudah ada di daftar kontak Anda.");
+
+            const tempConn = peer.connect(targetId);
+            tempConn.on('open', () => {
+                tempConn.send(JSON.stringify({tipe: "REQ_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
+                tampilkanPopupStatus(true, "Permintaan Terkirim", `Permintaan pertemanan berhasil dikirim ke @${targetId}.`);
+                document.getElementById('inputCariId').value = "";
+                setTimeout(() => tempConn.close(), 2000); // Tutup koneksi sementara
+            });
+            tempConn.on('error', () => {
+                alert("Target ID tidak ditemukan atau sedang offline.");
+            });
+        }
+
+        function tambahUIRequestTeman(fromId, fromName) {
+            const list = document.getElementById('listPermintaanMasuk');
+            if(list.innerText.includes("Belum ada permintaan")) list.innerHTML = "";
+            
+            // Cek duplikasi request di UI
+            if(document.getElementById('req_' + fromId)) return;
+
+            const div = document.createElement('div');
+            div.className = "friend-item";
+            div.id = 'req_' + fromId;
+            div.innerHTML = `
+                <div class="friend-info-left">
+                    <div class="friend-avatar" style="background: rgba(251, 191, 36, 0.1); color: var(--trophy-gold);">${fromName.charAt(0).toUpperCase()}</div>
+                    <div class="friend-details">
+                        <h5>${fromName}</h5>
+                        <p>@${fromId}</p>
+                    </div>
+                </div>
+                <div class="friend-actions">
+                    <button class="main-btn small-btn" onclick="terimaPertemanan('${fromId}', '${fromName}')"><i data-lucide="check"></i></button>
+                    <button class="danger-btn small-btn" onclick="tolakPertemanan('${fromId}')"><i data-lucide="x"></i></button>
+                </div>
+            `;
+            list.appendChild(div);
+            lucide.createIcons();
+        }
+
+        function terimaPertemanan(idLawan, namaLawan) {
+            document.getElementById('req_' + idLawan).remove();
+            
+            // Simpan lokal
+            if(!kontakTersimpan.find(k => k.id === idLawan)) {
+                kontakTersimpan.push({ id: idLawan, nama: namaLawan });
+                simpanKontakLocally();
+            }
+
+            // Balas konfirmasi
+            const tempConn = peer.connect(idLawan);
+            tempConn.on('open', () => {
+                tempConn.send(JSON.stringify({tipe: "ACC_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
+                setTimeout(() => tempConn.close(), 1000);
+            });
+        }
+
+        function tolakPertemanan(idLawan) {
+            document.getElementById('req_' + idLawan).remove();
+        }
+
+        // Mulai chat online berdasar PeerJS
+        function chatOnlineLangsung(idTarget, namaTarget) {
+            const conn = peer.connect(idTarget);
+            conn.on('open', () => {
+                conn.send(JSON.stringify({tipe: "PROFIL_BARU", data: {nama: currentUser.nama, id: currentUser.id}}));
+                aturKoneksiOnlineDataChannel(conn, {nama: namaTarget, id: idTarget});
+            });
+        }
+
+        function aturKoneksiOnlineDataChannel(conn, targetProfile) {
+            dataChannel = conn; // Timpa dataChannel bawaan offline P2P
+            profilLawan = targetProfile;
+            
+            const badge = document.getElementById('statusKoneksi');
+            badge.innerHTML = `<i data-lucide="shield-check"></i>Connected Online`;
+            badge.classList.add('online');
+            lucide.createIcons();
+            
+            document.getElementById('msgInput').disabled = false;
+            document.getElementById('sendBtn').disabled = false;
+            
+            // Update Card
+            const infoCard = document.getElementById('connectionInfoCard');
+            document.getElementById('connectedUserText').innerText = `${profilLawan.nama} (@${profilLawan.id})`;
+            infoCard.style.display = "flex";
+
+            log(`Tersambung langsung online dengan ${profilLawan.nama} (@${profilLawan.id})`, "system");
+            gantiMenuTab('obrolan');
+        }
+
+        // ==========================================
+        // WEBRTC OFFLINE P2P LOGIC (Asli)
         // ==========================================
         const config = { iceServers: [], iceTransportPolicy: "all" };
         let pc;
@@ -881,19 +1040,16 @@
                 wrapper.appendChild(nameDiv);
                 wrapper.appendChild(bubble);
                 
-                // Tambahkan fungsionalitas Geser Kanan/Kiri (Swipe to Reply) pada card chat
                 inisialisasiSwipeBalasan(wrapper, text, type === "me" ? currentUser.nama : profilLawan.nama);
-                
                 msgDiv.appendChild(wrapper);
             }
             msgDiv.scrollTop = msgDiv.scrollHeight;
         }
 
-        // FUNGSI SISTEM INTERAKSI SWIPE BALASAN CHAT
         function inisialisasiSwipeBalasan(elemen, teksPesan, pengirim) {
             let startX = 0;
             let currentX = 0;
-            const threshold = 60; // jarak geser minimal dalam pixel
+            const threshold = 60; 
 
             elemen.addEventListener('touchstart', (e) => {
                 startX = e.touches[0].clientX;
@@ -901,7 +1057,6 @@
 
             elemen.addEventListener('touchmove', (e) => {
                 currentX = e.touches[0].clientX - startX;
-                // Batasi geseran agar terasa rigid/elastis premium
                 if (Math.abs(currentX) < 100) {
                     elemen.style.transform = `translateX(${currentX}px)`;
                 }
@@ -910,7 +1065,6 @@
             elemen.addEventListener('touchend', () => {
                 elemen.style.transform = "translateX(0px)";
                 if (Math.abs(currentX) > threshold) {
-                    // Masukkan teks kutipan secara otomatis ke dalam input teks
                     const inputChat = document.getElementById('msgInput');
                     inputChat.value = `[Balas @${pengirim}: "${teksPesan.substring(0,25)}..."] ➔ `;
                     inputChat.focus();
@@ -947,7 +1101,7 @@
             dataChannel = channel;
             dataChannel.onopen = () => {
                 const badge = document.getElementById('statusKoneksi');
-                badge.innerHTML = `<i data-lucide="shield-check"></i>Connected`;
+                badge.innerHTML = `<i data-lucide="shield-check"></i>Connected Local`;
                 badge.classList.add('online');
                 lucide.createIcons();
                 
@@ -958,7 +1112,7 @@
                 if(html5QrCode) html5QrCode.stop().catch(() => {});
                 
                 dataChannel.send(JSON.stringify({tipe: "PROFIL_BARU", data: {nama: currentUser.nama, id: currentUser.id}}));
-                tampilkanPopupStatus(true, "Koneksi Berhasil!", "Enkripsi peer terhubung penuh. Anda sekarang berada di ruang obrolan offline.");
+                tampilkanPopupStatus(true, "Koneksi Offline Berhasil!", "Enkripsi peer terhubung penuh secara lokal.");
                 gantiMenuTab('obrolan');
             };
             
@@ -969,10 +1123,8 @@
                         profilLawan = paket.data;
                         log(`Tersambung aman dengan ${profilLawan.nama} (@${profilLawan.id})`, "system");
                         
-                        // Menampilkan Card Informasi Khusus di Menu Profil & Rute
                         const infoCard = document.getElementById('connectionInfoCard');
-                        const infoText = document.getElementById('connectedUserText');
-                        infoText.innerText = `${profilLawan.nama} (@${profilLawan.id})`;
+                        document.getElementById('connectedUserText').innerText = `${profilLawan.nama} (@${profilLawan.id})`;
                         infoCard.style.display = "flex";
                     } else if(paket.tipe === "CHATTING") { 
                         log(paket.data, "them"); 
@@ -1079,10 +1231,13 @@
         function kirimPesan() {
             const input = document.getElementById('msgInput');
             const teks = input.value.trim();
-            if (teks && dataChannel && dataChannel.readyState === "open") {
-                dataChannel.send(JSON.stringify({ tipe: "CHATTING", data: teks }));
-                log(teks, "me");
-                input.value = "";
+            if (teks && dataChannel) {
+                // Mendukung Online Conn (PeerJS) dan DataChannel Asli
+                if(dataChannel.readyState === "open" || dataChannel.open) {
+                    dataChannel.send(JSON.stringify({ tipe: "CHATTING", data: teks }));
+                    log(teks, "me");
+                    input.value = "";
+                }
             }
         }
 
