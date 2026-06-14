@@ -40,12 +40,13 @@
             background-color: #010a08; 
             background-image: radial-gradient(circle at center, #042f24 0%, #010a08 100%);
             display: flex; 
-            justify-content: center; 
-            align-items: center; 
+            justify-content: flex-start; 
+            align-items: flex-start; 
             min-height: 100vh;
             min-height: -webkit-fill-available;
             color: var(--text-main); 
             overflow: hidden; 
+            margin: 0;
         }
 
         .device-container {
@@ -65,11 +66,12 @@
         @media (min-width: 480px) {
             .device-container {
                 max-width: 450px;
-                height: 85vh;
-                max-height: 850px;
-                border-radius: 40px;
-                border: 8px solid #064032;
-                box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.9);
+                height: 100vh;
+                max-height: 100vh;
+                border-radius: 0;
+                border: none;
+                border-right: 1px solid #064032;
+                box-shadow: 25px 0 60px -15px rgba(0, 0, 0, 0.9);
             }
         }
         
@@ -500,6 +502,49 @@
                         <div class="stat-card"><label>Node Status</label><span>Aman</span></div>
                     </div>
 
+                    <div class="app-settings-cards">
+                        <div class="cool-setting-card" onclick="alert('Tutorial:\n1. Bagikan ID atau cari ID teman di tab Teman.\n2. Kirim permintaan berteman.\n3. Mulai obrolan aman setelah diterima.')">
+                            <div class="cool-card-left">
+                                <div class="cool-card-icon"><i data-lucide="book-open"></i></div>
+                                <div class="cool-card-text">
+                                    <h5>Tutorial</h5>
+                                    <p>Panduan penggunaan aplikasi</p>
+                                </div>
+                            </div>
+                            <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
+                        </div>
+                        <div class="cool-setting-card" onclick="alert('Informasi Aplikasi:\nVersi: 1.0.0 Premium World Cup\nSistem: P2P Terenkripsi')">
+                            <div class="cool-card-left">
+                                <div class="cool-card-icon"><i data-lucide="info"></i></div>
+                                <div class="cool-card-text">
+                                    <h5>Informasi Aplikasi Dan Versi</h5>
+                                    <p>Detail versi & sistem node</p>
+                                </div>
+                            </div>
+                            <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
+                        </div>
+                        <div class="cool-setting-card" onclick="alert('Kebijakan Privasi:\nPesan obrolan dienkripsi sepenuhnya end-to-end melalui jalur komunikasi Peer. Tidak ada satupun pesan atau data profil yang disalin atau disimpan di server pusat.')">
+                            <div class="cool-card-left">
+                                <div class="cool-card-icon"><i data-lucide="shield-alert"></i></div>
+                                <div class="cool-card-text">
+                                    <h5>Kebijakan</h5>
+                                    <p>Privasi, Hak & Keamanan Data</p>
+                                </div>
+                            </div>
+                            <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
+                        </div>
+                        <div class="cool-setting-card" onclick="alert('Tips:\n1. Gunakan koneksi internet stabil.\n2. Pastikan ID teman ditulis benar.\n3. Jangan langsung tutup tab saat kirim permintaan.\n4. Muat ulang (refresh) halaman jika node gagal nyambung.')">
+                            <div class="cool-card-left">
+                                <div class="cool-card-icon"><i data-lucide="zap"></i></div>
+                                <div class="cool-card-text">
+                                    <h5>Tips Agar Tidak Eror</h5>
+                                    <p>Solusi & Troubleshooting jitu</p>
+                                </div>
+                            </div>
+                            <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
+                        </div>
+                    </div>
+
                     <div class="setup-box" id="setupArea">
                         <div id="roleSelection">
                             <h3>Konfigurasi Jalur (Offline Mode)</h3>
@@ -910,7 +955,7 @@
                 const tempConn = peer.connect(targetId);
                 tempConn.on('open', () => {
                     tempConn.send(JSON.stringify({tipe: "REQ_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
-                    setTimeout(() => tempConn.close(), 2000); // Tutup koneksi sementara
+                    // setTimeout penutup channel dihapus agar data pesan pasti terkirim ke target
                 });
                 tempConn.on('error', () => {
                     console.log("Target ID offline, tapi pop-up tetap tampil.");
@@ -920,7 +965,7 @@
 
         function tambahUIRequestTeman(fromId, fromName) {
             const list = document.getElementById('listPermintaanMasuk');
-            if(list.innerText.includes("Belum ada permintaan")) list.innerHTML = "";
+            if(list.innerHTML.includes("Belum ada permintaan")) list.innerHTML = "";
             
             // Cek duplikasi request di UI
             if(document.getElementById('req_' + fromId)) return;
