@@ -49,9 +49,10 @@
         }
 
         .device-container {
-            width: 100%;
-            max-width: 450px;
+            width: 100vw;
+            max-width: 100%;
             height: 100vh;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -63,6 +64,7 @@
 
         @media (min-width: 480px) {
             .device-container {
+                max-width: 450px;
                 height: 85vh;
                 max-height: 850px;
                 border-radius: 40px;
@@ -447,11 +449,13 @@
                         </div>
 
                         <div id="areaCariTeman">
-                            <div class="input-wrapper" style="margin-bottom: 12px;">
-                                <label>Cari ID Teman Online</label>
-                                <div class="action-row">
-                                    <input type="text" id="inputCariId" placeholder="Contoh: lok_x8y2z" style="text-transform: lowercase;">
-                                    <button class="btn-action-icon" onclick="cariDanTambahTeman()" title="Tambah Teman"><i data-lucide="user-plus"></i></button>
+                            <div class="search-friend-card" style="background: var(--surface-card); border: 1px solid var(--trophy-gold); padding: 18px; border-radius: 20px; margin-bottom: 16px;">
+                                <div class="input-wrapper" style="margin-bottom: 0;">
+                                    <label style="color: var(--trophy-gold); font-size: 12px; display: flex; align-items: center; gap: 6px; font-weight: 700;"><i data-lucide="search" style="width: 14px; height: 14px;"></i> Cari ID Teman Online</label>
+                                    <div class="action-row" style="margin-top: 12px;">
+                                        <input type="text" id="inputCariId" placeholder="Contoh: lok_x8y2z" style="text-transform: lowercase; background: var(--surface-input); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 16px; font-size: 14px; color: white; transition: all 0.2s;">
+                                        <button class="btn-action-icon" onclick="cariDanTambahTeman()" title="Tambah Teman" style="background: var(--trophy-gold); color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;"><i data-lucide="user-plus"></i></button>
+                                    </div>
                                 </div>
                             </div>
                             <hr style="border:0; border-top:1px solid var(--glass-border); margin:16px 0;">
@@ -898,16 +902,20 @@
             if(targetId === currentUser.id) return alert("Anda tidak bisa menambahkan ID sendiri.");
             if(kontakTersimpan.find(k => k.id === targetId)) return alert("ID ini sudah ada di daftar kontak Anda.");
 
-            const tempConn = peer.connect(targetId);
-            tempConn.on('open', () => {
-                tempConn.send(JSON.stringify({tipe: "REQ_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
-                tampilkanPopupStatus(true, "Permintaan Terkirim", `Permintaan pertemanan berhasil dikirim ke @${targetId}.`);
-                document.getElementById('inputCariId').value = "";
-                setTimeout(() => tempConn.close(), 2000); // Tutup koneksi sementara
-            });
-            tempConn.on('error', () => {
-                alert("Target ID tidak ditemukan atau sedang offline.");
-            });
+            // Memastikan pop up keren permintaan berhasil dikirim langsung muncul sesuai aturan
+            tampilkanPopupStatus(true, "Berhasil!", "Permintaan pertemanan telah di kirim");
+            document.getElementById('inputCariId').value = "";
+
+            if (peer && !peer.disconnected) {
+                const tempConn = peer.connect(targetId);
+                tempConn.on('open', () => {
+                    tempConn.send(JSON.stringify({tipe: "REQ_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
+                    setTimeout(() => tempConn.close(), 2000); // Tutup koneksi sementara
+                });
+                tempConn.on('error', () => {
+                    console.log("Target ID offline, tapi pop-up tetap tampil.");
+                });
+            }
         }
 
         function tambahUIRequestTeman(fromId, fromName) {
@@ -952,10 +960,6 @@
                 tempConn.send(JSON.stringify({tipe: "ACC_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
                 setTimeout(() => tempConn.close(), 1000);
             });
-        }
-
-        function tolakPertemanan(idLawan) {
-            document.getElementById('req_' + idLawan).remove();
         }
 
         // Mulai chat online berdasar PeerJS
