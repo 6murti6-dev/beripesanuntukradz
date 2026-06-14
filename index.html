@@ -8,9 +8,31 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
     <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, set, push, onValue, get, update, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCHr0eemIkfHNFDUkSaFDklp_c1OgmSnl8",
+            authDomain: "mybro-9ba5f.firebaseapp.com",
+            databaseURL: "https://mybro-9ba5f-default-rtdb.firebaseio.com/",
+            projectId: "mybro-9ba5f"
+        };
+        
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Menjadikan fungsi firebase dapat diakses di lingkup global script
+        window.firebaseDB = db;
+        window.firebaseRef = ref;
+        window.firebaseSet = set;
+        window.firebaseOnValue = onValue;
+    </script>
+
     <style>
         :root {
-            /* Tema FIFA World Cup 2026 Premium */
+            /* Tema FIFA World Cup 2026 Premium (Default/Hijau Online) */
             --stadium-green: #064e3b;
             --pitch-dark: #022c22;
             --trophy-gold: #fbbf24;
@@ -28,17 +50,31 @@
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
             --transition-smooth: cubic-bezier(0.16, 1, 0.3, 1);
-            
-            /* iOS Glassmorphism Spec */
             --ios-glass-bg: rgba(4, 32, 25, 0.65);
             --ios-glass-blur: blur(20px) saturate(190%);
+        }
+
+        /* Tema Offline (Merah) */
+        body.theme-offline {
+            --stadium-green: #4e0606;
+            --pitch-dark: #2c0202;
+            --primary: #e11d48;
+            --success: #10b981;
+            --danger: #f43f5e;
+            --bg-body: #140101;
+            --surface: #2f0404;
+            --surface-card: #400606;
+            --surface-input: #1a0202;
+            --bubble-me: linear-gradient(135deg, #e11d48, #be123c);
+            --bubble-them: #5e1111;
+            --ios-glass-bg: rgba(32, 4, 4, 0.65);
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
         
         body { 
-            background-color: #010a08; 
-            background-image: radial-gradient(circle at center, #042f24 0%, #010a08 100%);
+            background-color: var(--bg-body); 
+            background-image: radial-gradient(circle at center, var(--surface) 0%, var(--bg-body) 100%);
             display: flex; 
             justify-content: flex-start; 
             align-items: flex-start; 
@@ -47,6 +83,7 @@
             color: var(--text-main); 
             overflow: hidden; 
             margin: 0;
+            transition: background-color 0.6s ease, background-image 0.6s ease;
         }
 
         .device-container {
@@ -60,18 +97,16 @@
             background: var(--bg-body);
             overflow: hidden;
             box-shadow: 0 0 0 0 transparent;
-            transition: all 0.3s ease;
+            transition: all 0.3s ease, background-color 0.6s ease;
         }
 
         @media (min-width: 480px) {
             .device-container {
-                max-width: 450px;
+                max-width: 100vw; /* Memenuhi layar agar rapi */
                 height: 100vh;
                 max-height: 100vh;
                 border-radius: 0;
                 border: none;
-                border-right: 1px solid #064032;
-                box-shadow: 25px 0 60px -15px rgba(0, 0, 0, 0.9);
             }
         }
         
@@ -100,12 +135,13 @@
         }
         .screen.active { opacity: 1; transform: translate3d(0, 0, 0); pointer-events: auto; z-index: 5; }
 
-        .auth-container { display: flex; flex-direction: column; justify-content: center; padding: 20px; height: 100%; background: radial-gradient(circle at top, #065f46 0%, var(--bg-body) 100%); overflow-y: auto; }
+        .auth-container { display: flex; flex-direction: column; justify-content: center; padding: 20px; height: 100%; background: radial-gradient(circle at top, var(--stadium-green) 0%, var(--bg-body) 100%); overflow-y: auto; transition: background 0.6s ease; }
         .auth-box { 
-            background: rgba(4, 47, 36, 0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            background: var(--ios-glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
             border: 1px solid var(--glass-border); padding: 32px 20px; border-radius: 28px; 
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
             width: 100%;
+            transition: background 0.6s ease;
         }
         .auth-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(251, 191, 36, 0.1); border: 1px solid rgba(251, 191, 36, 0.3); color: var(--trophy-gold); font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; margin-bottom: 20px; letter-spacing: 0.5px; }
         .auth-box h2 { font-size: 24px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.5px; color: #fff; }
@@ -119,7 +155,7 @@
             width: 100%; padding: 14px 16px; border: 1px solid var(--glass-border); border-radius: 16px; 
             background: var(--surface-input); color: white; font-size: 14px; outline: none; transition: all 0.2s ease;
         }
-        .auth-box input:focus, .modal-content input:focus, .code-input:focus { border-color: var(--trophy-gold); background: #010d0a; box-shadow: none; }
+        .auth-box input:focus, .modal-content input:focus, .code-input:focus { border-color: var(--trophy-gold); background: rgba(0,0,0,0.5); box-shadow: none; }
         .input-readonly { background: rgba(255,255,255,0.03) !important; color: #94a3b8 !important; border-color: var(--glass-border) !important; cursor: not-allowed; }
         
         .toggle-auth { color: var(--text-muted); font-size: 13px; cursor: pointer; display: inline-block; margin-top: 24px; transition: color 0.2s ease; font-weight: 500; text-decoration: none; }
@@ -136,11 +172,12 @@
             box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
             z-index: 10;
             flex-shrink: 0;
+            transition: background 0.6s ease;
         }
         .header-title { font-size: 16px; font-weight: 800; letter-spacing: -0.3px; color: #fff; display: flex; align-items: center; gap: 8px; }
         .header-title i { color: var(--trophy-gold); width: 18px; height: 18px; }
         
-        .badge-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); }
+        .badge-status { display: inline-flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700; text-transform: uppercase; padding: 6px 14px; border-radius: 100px; background: rgba(255,255,255,0.05); color: var(--text-muted); border: 1px solid var(--glass-border); transition: all 0.3s ease; }
         .badge-status.online { background: rgba(16, 185, 129, 0.15); color: #fff; border: 1px solid var(--success); box-shadow: none; }
         .badge-status.internet { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid #3b82f6; }
 
@@ -156,6 +193,7 @@
             margin: 8px 16px 16px 16px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.4);
             flex-shrink: 0;
+            transition: background 0.6s ease;
         }
         .nav-item {
             flex: 1; background: transparent; border: none; color: var(--text-muted); padding: 10px; border-radius: 14px;
@@ -185,7 +223,7 @@
         .stat-card span { font-size: 13px; font-weight: 700; color: var(--text-main); }
 
         .connected-card {
-            background: linear-gradient(135deg, #022c22 0%, #064e3b 100%);
+            background: linear-gradient(135deg, var(--pitch-dark) 0%, var(--stadium-green) 100%);
             border: 1px solid var(--primary);
             border-radius: 18px;
             padding: 16px;
@@ -197,21 +235,21 @@
         }
         .connected-icon-box {
             width: 40px; height: 40px; border-radius: 12px; background: rgba(16, 185, 129, 0.2);
-            display: flex; align-items: center; justify-content: center; color: #10b981;
+            display: flex; align-items: center; justify-content: center; color: var(--success);
         }
-        .connected-info h6 { font-size: 11px; color: #10b981; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
+        .connected-info h6 { font-size: 11px; color: var(--success); font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px; }
         .connected-info p { font-size: 14px; font-weight: 700; color: #fff; margin-top: 2px; }
 
         .app-settings-cards { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
         .cool-setting-card {
-            background: linear-gradient(135deg, rgba(6, 64, 50, 0.6) 0%, rgba(4, 47, 36, 0.4) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
             border: 1px solid var(--glass-border); border-radius: 18px; padding: 14px 16px;
             display: flex; align-items: center; justify-content: space-between; cursor: pointer;
             transition: all 0.2s ease;
         }
         .cool-setting-card:hover {
             border-color: rgba(251, 191, 36, 0.4);
-            background: linear-gradient(135deg, rgba(6, 64, 50, 0.8) 0%, rgba(4, 47, 36, 0.6) 100%);
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.08) 0%, rgba(255, 255, 255, 0.04) 100%);
             transform: translateX(2px);
         }
         .cool-card-left { display: flex; align-items: center; gap: 12px; }
@@ -235,11 +273,11 @@
         
         button { font-size: 13.5px; font-weight: 600; transition: all 0.2s var(--transition-smooth); display: inline-flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; border: none; }
         button.main-btn { background: var(--primary); color: white; padding: 14px 20px; border-radius: 16px; width: 100%; border: 1px solid rgba(255,255,255,0.08); font-weight: 700; box-shadow: none !important; }
-        button.main-btn:hover { background: #059669; transform: none; }
+        button.main-btn:hover { filter: brightness(1.1); transform: none; }
         button.secondary-btn { background: rgba(255,255,255,0.06); color: var(--text-main); border: 1px solid var(--glass-border); padding: 14px 20px; border-radius: 16px; width: 100%; box-shadow: none !important; }
         button.secondary-btn:hover { background: rgba(255,255,255,0.12); }
-        button.danger-btn { background: #e11d48; color: white; padding: 14px 20px; border-radius: 16px; width: 100%; font-weight: 700; border: none; box-shadow: none !important; }
-        button.danger-btn:hover { background: #be123c; }
+        button.danger-btn { background: var(--danger); color: white; padding: 14px 20px; border-radius: 16px; width: 100%; font-weight: 700; border: none; box-shadow: none !important; }
+        button.danger-btn:hover { filter: brightness(1.1); }
         button.small-btn { padding: 8px 12px; font-size: 11px; border-radius: 10px; width: auto; }
         button.small-btn i { width: 14px; height: 14px; }
         
@@ -256,7 +294,7 @@
 
         #readerA, #readerB { width: 100%; max-width: 240px; border-radius: 18px; overflow: hidden; margin: 0 auto; border: 1px solid var(--glass-border); }
 
-        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: #011c15; position: relative; }
+        .chat-container { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: rgba(0,0,0,0.3); position: relative; border-radius: 20px; margin-bottom: 12px; }
         .chat-container::before {
             content: ''; position: absolute; inset: 0; opacity: 0.04; pointer-events: none;
             background-image: 
@@ -271,7 +309,7 @@
         #messages::-webkit-scrollbar { width: 4px; }
         #messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 10px; }
         
-        .msg-system { align-self: center; background: rgba(2, 44, 34, 0.8); border: 1px solid rgba(251, 191, 36, 0.2); padding: 6px 14px; border-radius: 100px; font-size: 11px; color: var(--trophy-gold); font-weight: 600; letter-spacing: 0.2px; text-align: center; max-width: 90%; }
+        .msg-system { align-self: center; background: rgba(0,0,0,0.5); border: 1px solid rgba(251, 191, 36, 0.2); padding: 6px 14px; border-radius: 100px; font-size: 11px; color: var(--trophy-gold); font-weight: 600; letter-spacing: 0.2px; text-align: center; max-width: 90%; }
         
         .msg-wrapper { 
             display: flex; 
@@ -303,8 +341,8 @@
             -webkit-backdrop-filter: blur(8px);
         }
         
-        .msg-wrapper.me .msg { background: #059669; border-bottom-right-radius: 4px; color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
-        .msg-wrapper.them .msg { background: #115e59; border-bottom-left-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); color: #f1f5f9; }
+        .msg-wrapper.me .msg { background: var(--bubble-me); border-bottom-right-radius: 4px; color: white; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .msg-wrapper.them .msg { background: var(--bubble-them); border-bottom-left-radius: 4px; border: 1px solid rgba(255, 255, 255, 0.05); color: #f1f5f9; }
         
         .msg-content { display: block; letter-spacing: -0.1px; }
         .msg-time { font-size: 10px; opacity: 0.6; margin-top: 6px; display: block; text-align: right; font-weight: 600; letter-spacing: 0.2px; }
@@ -318,29 +356,30 @@
             border: 1px solid rgba(255, 255, 255, 0.1); 
             z-index: 10; align-items: center; 
             border-radius: 20px;
-            margin: 8px 16px 16px 16px;
+            margin: 0 16px 16px 16px;
             box-shadow: 0 -10px 30px rgba(0,0,0,0.3);
             flex-shrink: 0;
+            transition: background 0.6s ease;
         }
         .input-box input { flex: 1; padding: 13px 18px; border: 1px solid var(--glass-border); border-radius: 100px; outline: none; font-size: 14px; background: var(--surface-input); color: var(--text-main); transition: all 0.2s ease; }
-        .input-box input:focus { border-color: var(--trophy-gold); background: #010a08; }
+        .input-box input:focus { border-color: var(--trophy-gold); background: rgba(0,0,0,0.3); }
         .send-btn { width: 44px; height: 44px; border-radius: 50%; background: var(--trophy-gold); color: #000; border: none; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
         .send-btn:disabled { background: var(--surface-input); color: var(--text-muted); border: 1px solid var(--glass-border); cursor: not-allowed; }
         .send-btn i { width: 18px; height: 18px; }
 
         .modal { 
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(1, 13, 10, 0.85); 
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); 
             backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); justify-content: center; align-items: center; z-index: 1000;
             opacity: 0; transition: opacity 0.3s ease; padding: 16px;
         }
         .modal.show { display: flex; opacity: 1; }
         
         .modal-content { 
-            background: #042f24; 
+            background: var(--surface); 
             padding: 28px 20px; border-radius: 24px; width: 100%; max-width: 380px; 
             text-align: center; border: 1px solid rgba(255, 255, 255, 0.12); 
             box-shadow: 0 30px 60px rgba(0,0,0,0.6);
-            transform: scale(0.95) translate3d(0, 15px, 0); transition: transform 0.3s var(--transition-smooth);
+            transform: scale(0.95) translate3d(0, 15px, 0); transition: transform 0.3s var(--transition-smooth), background 0.6s ease;
         }
         .modal.show .modal-content { transform: scale(1) translate3d(0, 0, 0); }
         
@@ -356,9 +395,9 @@
         .status-popup-icon { width: 56px; height: 56px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 16px; }
         .status-popup-icon.success { background: rgba(16, 185, 129, 0.15); color: var(--success); border: 1px solid var(--success); }
         .status-popup-icon.danger { background: rgba(244, 63, 94, 0.15); color: var(--danger); border: 1px solid var(--danger); }
+        .status-popup-icon.info { background: rgba(59, 130, 246, 0.15); color: #3b82f6; border: 1px solid #3b82f6; }
         .status-popup-icon i { width: 28px; height: 28px; }
 
-        /* LIST ITEM PERTEMANAN (FLAT STYLES) */
         .friend-list { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; }
         .friend-item {
             background: var(--surface); border: 1px solid var(--glass-border); border-radius: 16px; padding: 12px 14px;
@@ -376,10 +415,10 @@
         }
     </style>
 </head>
-<body>
+<body class="theme-offline">
 
     <div class="device-container">
-        <div class="screen-wrapper">
+        <div class="screen-wrapper" id="swipeArea">
 
             <div id="authScreen" class="screen">
                 <div class="auth-container">
@@ -431,15 +470,15 @@
                     <div class="badge-status" id="statusKoneksi"><i data-lucide="activity" style="width:12px;"></i>Offline</div>
                 </header>
 
-                <div id="tabObrolan" class="tab-content active" style="padding: 0;">
+                <div id="tabObrolan" class="tab-content active" style="padding: 0 16px;">
                     <div class="chat-container">
                         <div id="messages">
                             <div class="msg-system">Status Node: Menunggu Inisialisasi Enkripsi P2P</div>
                         </div>
-                        <div class="input-box">
-                            <input type="text" id="msgInput" placeholder="Ketik pesan terenkripsi peer..." disabled>
-                            <button class="send-btn" id="sendBtn" onclick="kirimPesan()" disabled><i data-lucide="send"></i></button>
-                        </div>
+                    </div>
+                    <div class="input-box">
+                        <input type="text" id="msgInput" placeholder="Ketik pesan terenkripsi peer..." disabled>
+                        <button class="send-btn" id="sendBtn" onclick="kirimPesan()" disabled><i data-lucide="send"></i></button>
                     </div>
                 </div>
 
@@ -456,7 +495,7 @@
                                     <label style="color: var(--trophy-gold); font-size: 12px; display: flex; align-items: center; gap: 6px; font-weight: 700;"><i data-lucide="search" style="width: 14px; height: 14px;"></i> Cari ID Teman Online</label>
                                     <div class="action-row" style="margin-top: 12px;">
                                         <input type="text" id="inputCariId" placeholder="Contoh: lok_x8y2z" style="text-transform: lowercase; background: var(--surface-input); border: 1px solid var(--glass-border); border-radius: 14px; padding: 14px 16px; font-size: 14px; color: white; transition: all 0.2s;">
-                                        <button class="btn-action-icon" onclick="cariDanTambahTeman()" title="Tambah Teman" style="background: var(--trophy-gold); color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;"><i data-lucide="user-plus"></i></button>
+                                        <button class="btn-action-icon" onclick="cariDanTambahTemanFirebase()" title="Tambah Teman" style="background: var(--trophy-gold); color: #000; border: none; width: 50px; height: 50px; border-radius: 14px; flex-shrink: 0;"><i data-lucide="user-plus"></i></button>
                                     </div>
                                 </div>
                             </div>
@@ -470,7 +509,7 @@
                         <div id="areaDaftarKontak" style="display: none;">
                             <h3 style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px;">Kontak Tersimpan</h3>
                             <div id="listKontakTeman" class="friend-list">
-                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -503,7 +542,7 @@
                     </div>
 
                     <div class="app-settings-cards">
-                        <div class="cool-setting-card" onclick="alert('Tutorial:\n1. Bagikan ID atau cari ID teman di tab Teman.\n2. Kirim permintaan berteman.\n3. Mulai obrolan aman setelah diterima.')">
+                        <div class="cool-setting-card" onclick="bukaKerenModal('Tutorial', '1. Bagikan ID atau cari ID teman di tab Teman.\n2. Kirim permintaan berteman.\n3. Mulai obrolan aman setelah diterima.', 'book-open')">
                             <div class="cool-card-left">
                                 <div class="cool-card-icon"><i data-lucide="book-open"></i></div>
                                 <div class="cool-card-text">
@@ -513,7 +552,7 @@
                             </div>
                             <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
                         </div>
-                        <div class="cool-setting-card" onclick="alert('Informasi Aplikasi:\nVersi: 1.0.0 Premium World Cup\nSistem: P2P Terenkripsi')">
+                        <div class="cool-setting-card" onclick="bukaKerenModal('Informasi Aplikasi', 'Versi: 1.0.0 Premium World Cup\nSistem: P2P Terenkripsi\nMode Offline dan Online Dinamis Aktif.', 'info')">
                             <div class="cool-card-left">
                                 <div class="cool-card-icon"><i data-lucide="info"></i></div>
                                 <div class="cool-card-text">
@@ -523,7 +562,7 @@
                             </div>
                             <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
                         </div>
-                        <div class="cool-setting-card" onclick="alert('Kebijakan Privasi:\nPesan obrolan dienkripsi sepenuhnya end-to-end melalui jalur komunikasi Peer. Tidak ada satupun pesan atau data profil yang disalin atau disimpan di server pusat.')">
+                        <div class="cool-setting-card" onclick="bukaKerenModal('Kebijakan Privasi', 'Pesan obrolan dienkripsi sepenuhnya end-to-end melalui jalur komunikasi Peer.\n\nTidak ada satupun pesan atau data profil yang disalin atau disimpan di server pusat.', 'shield-alert')">
                             <div class="cool-card-left">
                                 <div class="cool-card-icon"><i data-lucide="shield-alert"></i></div>
                                 <div class="cool-card-text">
@@ -533,7 +572,7 @@
                             </div>
                             <div class="cool-card-arrow"><i data-lucide="chevron-right"></i></div>
                         </div>
-                        <div class="cool-setting-card" onclick="alert('Tips:\n1. Gunakan koneksi internet stabil.\n2. Pastikan ID teman ditulis benar.\n3. Jangan langsung tutup tab saat kirim permintaan.\n4. Muat ulang (refresh) halaman jika node gagal nyambung.')">
+                        <div class="cool-setting-card" onclick="bukaKerenModal('Tips Anti Error', '1. Gunakan koneksi internet stabil.\n2. Pastikan penulisan ID teman akurat.\n3. Jangan mematikan halaman saat sinkronisasi.\n4. Muat ulang halaman (refresh) jika P2P gagal menyambung.', 'zap')">
                             <div class="cool-card-left">
                                 <div class="cool-card-icon"><i data-lucide="zap"></i></div>
                                 <div class="cool-card-text">
@@ -672,6 +711,15 @@
         </div>
     </div>
 
+    <div class="modal" id="kerenInfoModal">
+        <div class="modal-content" style="text-align: center;">
+            <div class="modal-header-icon" id="kerenInfoIcon"><i data-lucide="info"></i></div>
+            <h4 id="kerenInfoTitle">Judul</h4>
+            <p id="kerenInfoDesc" style="color: var(--text-muted); font-size: 13.5px; line-height: 1.6; text-align: left; margin-bottom: 24px; white-space: pre-line; background: var(--surface-input); padding: 14px; border-radius: 12px; border: 1px solid var(--glass-border);"></p>
+            <button class="main-btn" onclick="tutupKerenModal()">Mengerti</button>
+        </div>
+    </div>
+
     <div class="modal" id="statusPopupModal">
         <div class="modal-content">
             <div id="popupIcon" class="status-popup-icon">
@@ -688,16 +736,64 @@
         let kontakTersimpan = [];
         let peer;
         let onlineConnectionMap = {};
+        
+        // Konstanta Navigasi Swipe
+        const namaTabMenu = ['obrolan', 'teman', 'profil'];
+        let indeksTabSaatIni = 0;
+
+        function setTemaKoneksi(isOnline) {
+            if(isOnline) {
+                document.body.classList.remove('theme-offline');
+            } else {
+                document.body.classList.add('theme-offline');
+            }
+        }
 
         function inisialisasiAplikasi() {
             lucide.createIcons();
             muatKontak();
+            inisialisasiSwipeLayar();
             const dataTersimpan = localStorage.getItem('offlineChatAppUser');
             if (dataTersimpan) {
                 masukKeAplikasi(JSON.parse(dataTersimpan));
             } else {
                 document.getElementById('authScreen').classList.add('active');
                 toggleAuthMode('register');
+                setTemaKoneksi(false); // Mode Auth Offline Merah default
+            }
+        }
+
+        // SWIPE LAYAR MENU
+        function inisialisasiSwipeLayar() {
+            let mulaiSwipeX = 0;
+            let selesaiSwipeX = 0;
+            const area = document.getElementById('swipeArea');
+
+            area.addEventListener('touchstart', (e) => {
+                mulaiSwipeX = e.changedTouches[0].screenX;
+            }, {passive: true});
+
+            area.addEventListener('touchend', (e) => {
+                selesaiSwipeX = e.changedTouches[0].screenX;
+                evaluasiSwipe();
+            }, {passive: true});
+
+            function evaluasiSwipe() {
+                const ambangBatas = 60; // sensitivitas geser
+                if (selesaiSwipeX < mulaiSwipeX - ambangBatas) {
+                    // Geser Kiri -> Tab Berikutnya
+                    if (indeksTabSaatIni < namaTabMenu.length - 1) {
+                        indeksTabSaatIni++;
+                        gantiMenuTab(namaTabMenu[indeksTabSaatIni]);
+                    }
+                }
+                if (selesaiSwipeX > mulaiSwipeX + ambangBatas) {
+                    // Geser Kanan -> Tab Sebelumnya
+                    if (indeksTabSaatIni > 0) {
+                        indeksTabSaatIni--;
+                        gantiMenuTab(namaTabMenu[indeksTabSaatIni]);
+                    }
+                }
             }
         }
 
@@ -727,10 +823,10 @@
         }
 
         function gantiMenuTab(target) {
-            const tabs = ['obrolan', 'teman', 'profil'];
+            indeksTabSaatIni = namaTabMenu.indexOf(target);
             const appHeaderTitle = document.getElementById('appHeaderTitle');
 
-            tabs.forEach(t => {
+            namaTabMenu.forEach(t => {
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
                 document.getElementById('btnNav' + t.charAt(0).toUpperCase() + t.slice(1)).classList.remove('active');
             });
@@ -785,7 +881,8 @@
             setTimeout(() => {
                 document.getElementById('mainScreen').classList.add('active');
                 perbaruiTampilanHeader();
-                inisialisasiOnlinePeerJS(); // Inisialisasi Fitur Online Otomatis
+                inisialisasiOnlinePeerJS(); 
+                pantauPermintaanTemanFirebase(); // Menarik koneksi Firebase Permintaan teman
             }, 50);
         }
 
@@ -828,9 +925,29 @@
             tutupModal();
         }
 
+        // ==========================================
+        // FUNGSI POPUP KEREN (PENGGANTI ALERT)
+        // ==========================================
+        function bukaKerenModal(judul, deskripsi, icon) {
+            document.getElementById('kerenInfoTitle').innerText = judul;
+            document.getElementById('kerenInfoDesc').innerText = deskripsi;
+            document.getElementById('kerenInfoIcon').innerHTML = `<i data-lucide="${icon}"></i>`;
+            lucide.createIcons();
+            
+            const modal = document.getElementById('kerenInfoModal');
+            modal.style.display = "flex";
+            setTimeout(() => modal.classList.add('show'), 20);
+        }
+
+        function tutupKerenModal() {
+            const modal = document.getElementById('kerenInfoModal');
+            modal.classList.remove('show');
+            setTimeout(() => modal.style.display = "none", 250);
+        }
+
         function unduhQR(containerId) {
             const img = document.getElementById(containerId).querySelector('img');
-            if(!img) return alert("QR Code belum dibuat!");
+            if(!img) return bukaKerenModal("Peringatan", "QR Code belum dibuat sistem!", "alert-triangle");
             const link = document.createElement('a');
             link.href = img.src;
             link.download = `p2p-route-${containerId}.png`;
@@ -867,7 +984,7 @@
         }
 
         // ==========================================
-        // FITUR TEMAN (ONLINE PEERJS)
+        // FITUR TEMAN (ONLINE PEERJS & FIREBASE)
         // ==========================================
         function muatKontak() {
             const cache = localStorage.getItem('p2p_contacts');
@@ -905,6 +1022,44 @@
             lucide.createIcons();
         }
 
+        // PENGIRIMAN PERMINTAAN MENGGUNAKAN FIREBASE
+        function cariDanTambahTemanFirebase() {
+            const targetId = document.getElementById('inputCariId').value.trim();
+            if(!targetId) return bukaKerenModal("Peringatan", "Masukkan ID teman terlebih dahulu!", "alert-circle");
+            if(targetId === currentUser.id) return bukaKerenModal("Tidak Valid", "Anda tidak bisa menambahkan ID sendiri.", "x-circle");
+            if(kontakTersimpan.find(k => k.id === targetId)) return bukaKerenModal("Sudah Berteman", "ID ini sudah ada di daftar kontak Anda.", "users");
+
+            if(window.firebaseDB) {
+                // Tulis request ke firebase
+                const reqRef = window.firebaseRef(window.firebaseDB, 'permintaan_teman/' + targetId + '/' + currentUser.id);
+                window.firebaseSet(reqRef, {
+                    id: currentUser.id,
+                    nama: currentUser.nama
+                });
+
+                tampilkanPopupStatus(true, "Berhasil!", "Permintaan pertemanan telah di kirim melalui Database Awan.");
+                document.getElementById('inputCariId').value = "";
+            } else {
+                bukaKerenModal("Koneksi Error", "Modul Firebase sedang disiapkan, tunggu sebentar.", "loader");
+            }
+        }
+
+        // MENDENGARKAN PERMINTAAN DARI FIREBASE
+        function pantauPermintaanTemanFirebase() {
+            if(!window.firebaseDB) return setTimeout(pantauPermintaanTemanFirebase, 500); // Tunggu sampai script termuat
+
+            const myReqRef = window.firebaseRef(window.firebaseDB, 'permintaan_teman/' + currentUser.id);
+            window.firebaseOnValue(myReqRef, (snapshot) => {
+                const data = snapshot.val();
+                document.getElementById('listPermintaanMasuk').innerHTML = '<p style="font-size: 12px; color: var(--text-muted); text-align: center; padding: 10px;">Belum ada permintaan</p>';
+                if(data) {
+                    Object.values(data).forEach(req => {
+                        tambahUIRequestTeman(req.id, req.nama);
+                    });
+                }
+            });
+        }
+
         function inisialisasiOnlinePeerJS() {
             peer = new Peer(currentUser.id); 
             peer.on('open', (id) => {
@@ -912,6 +1067,7 @@
                 badge.innerHTML = `<i data-lucide="globe"></i>Siap Online`;
                 badge.className = "badge-status internet";
                 lucide.createIcons();
+                setTemaKoneksi(true); // Ubah tema jadi Hijau (Online)
             });
 
             peer.on('connection', (conn) => {
@@ -919,9 +1075,7 @@
                     let paket;
                     try { paket = JSON.parse(data); } catch(e) { paket = data; }
 
-                    if(paket.tipe === "REQ_TEMAN") {
-                        tambahUIRequestTeman(paket.data.id, paket.data.nama);
-                    } else if (paket.tipe === "ACC_TEMAN") {
+                    if (paket.tipe === "ACC_TEMAN") {
                         tampilkanPopupStatus(true, "Permintaan Diterima!", `${paket.data.nama} telah menerima pertemanan Anda.`);
                         if(!kontakTersimpan.find(k => k.id === paket.data.id)) {
                             kontakTersimpan.push(paket.data);
@@ -938,29 +1092,8 @@
             
             peer.on('error', (err) => {
                 console.log("Jaringan Peer terputus/error", err);
+                setTemaKoneksi(false); // Balik Tema Merah saat Error koneksi
             });
-        }
-
-        function cariDanTambahTeman() {
-            const targetId = document.getElementById('inputCariId').value.trim();
-            if(!targetId) return alert("Masukkan ID teman terlebih dahulu!");
-            if(targetId === currentUser.id) return alert("Anda tidak bisa menambahkan ID sendiri.");
-            if(kontakTersimpan.find(k => k.id === targetId)) return alert("ID ini sudah ada di daftar kontak Anda.");
-
-            // Memastikan pop up keren permintaan berhasil dikirim langsung muncul sesuai aturan
-            tampilkanPopupStatus(true, "Berhasil!", "Permintaan pertemanan telah di kirim");
-            document.getElementById('inputCariId').value = "";
-
-            if (peer && !peer.disconnected) {
-                const tempConn = peer.connect(targetId);
-                tempConn.on('open', () => {
-                    tempConn.send(JSON.stringify({tipe: "REQ_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
-                    // setTimeout penutup channel dihapus agar data pesan pasti terkirim ke target
-                });
-                tempConn.on('error', () => {
-                    console.log("Target ID offline, tapi pop-up tetap tampil.");
-                });
-            }
         }
 
         function tambahUIRequestTeman(fromId, fromName) {
@@ -991,20 +1124,39 @@
         }
 
         function terimaPertemanan(idLawan, namaLawan) {
-            document.getElementById('req_' + idLawan).remove();
+            // Hapus UI Lokal
+            const elementUI = document.getElementById('req_' + idLawan);
+            if(elementUI) elementUI.remove();
             
-            // Simpan lokal
+            // Simpan ke kontak lokal
             if(!kontakTersimpan.find(k => k.id === idLawan)) {
                 kontakTersimpan.push({ id: idLawan, nama: namaLawan });
                 simpanKontakLocally();
             }
 
-            // Balas konfirmasi
+            // Hapus permintaan di Firebase agar pop-up tidak muncul lagi
+            if(window.firebaseDB) {
+                const hapusRef = window.firebaseRef(window.firebaseDB, 'permintaan_teman/' + currentUser.id + '/' + idLawan);
+                window.firebaseSet(hapusRef, null);
+            }
+
+            // Balas konfirmasi Via P2P
             const tempConn = peer.connect(idLawan);
             tempConn.on('open', () => {
                 tempConn.send(JSON.stringify({tipe: "ACC_TEMAN", data: {nama: currentUser.nama, id: currentUser.id}}));
                 setTimeout(() => tempConn.close(), 1000);
             });
+        }
+
+        function tolakPertemanan(idLawan) {
+            const elementUI = document.getElementById('req_' + idLawan);
+            if(elementUI) elementUI.remove();
+
+            // Hapus dari Firebase DB
+            if(window.firebaseDB) {
+                const hapusRef = window.firebaseRef(window.firebaseDB, 'permintaan_teman/' + currentUser.id + '/' + idLawan);
+                window.firebaseSet(hapusRef, null);
+            }
         }
 
         // Mulai chat online berdasar PeerJS
@@ -1024,6 +1176,7 @@
             badge.innerHTML = `<i data-lucide="shield-check"></i>Connected Online`;
             badge.classList.add('online');
             lucide.createIcons();
+            setTemaKoneksi(true); // Tema Hijau
             
             document.getElementById('msgInput').disabled = false;
             document.getElementById('sendBtn').disabled = false;
@@ -1061,6 +1214,7 @@
                     tampilkanPopupStatus(false, "Koneksi Terputus", "Jalur komunikasi rute terputus atau target peer offline.");
                     log("Koneksi rute terputus.", "system");
                     document.getElementById('connectionInfoCard').style.display = "none";
+                    setTemaKoneksi(false); // Kembalikan ke Merah karena Putus
                 }
             };
         }
@@ -1133,7 +1287,7 @@
             try {
                 const text = await navigator.clipboard.readText();
                 document.getElementById(elementId).value = text;
-            } catch (err) { alert("Silakan tempel token secara manual."); }
+            } catch (err) { bukaKerenModal("Izin Akses", "Silakan tempel token secara manual di kolom yang tersedia.", "info"); }
         }
 
         function gantiMetode(metode) {
@@ -1153,6 +1307,7 @@
                 badge.innerHTML = `<i data-lucide="shield-check"></i>Connected Local`;
                 badge.classList.add('online');
                 lucide.createIcons();
+                setTemaKoneksi(true); // Tema Hijau Aktif Saat Terhubung
                 
                 document.getElementById('msgInput').disabled = false;
                 document.getElementById('sendBtn').disabled = false;
@@ -1215,15 +1370,15 @@
 
         async function konekManualA() {
             const tokenB = document.getElementById('inputTeksB').value.trim();
-            if(!tokenB) return alert("Masukkan kode rute balasan.");
+            if(!tokenB) return bukaKerenModal("Kode Kosong", "Masukkan kode rute balasan dengan benar.", "alert-circle");
             try {
                 await pc.setRemoteDescription(new RTCSessionDescription(JSON.parse(atob(tokenB))));
-            } catch(e) { alert("Kunci token salah/rusak!"); }
+            } catch(e) { bukaKerenModal("Kesalahan Eksekusi", "Kunci token salah atau rusak!", "x-octagon"); }
         }
 
         async function prosesManualB() {
             const tokenA = document.getElementById('inputTeksA').value.trim();
-            if(!tokenA) return alert("Masukkan kode rute awal.");
+            if(!tokenA) return bukaKerenModal("Kode Kosong", "Masukkan kode rute awal terlebih dahulu.", "alert-circle");
             try {
                 const offer = new RTCSessionDescription(JSON.parse(atob(tokenA)));
                 iceTimeout = setTimeout(() => { 
@@ -1240,7 +1395,7 @@
                 await pc.setRemoteDescription(offer);
                 const answer = await pc.createAnswer();
                 await pc.setLocalDescription(answer);
-            } catch(e) { alert("Gagal memproses kode rute!"); }
+            } catch(e) { bukaKerenModal("Gagal Memproses", "Gagal memproses kode rute sistem, cek kembali struktur yang disalin.", "cpu"); }
         }
 
         function bukaKamera(target) {
@@ -1272,7 +1427,7 @@
                             const answer = await pc.createAnswer();
                             await pc.setLocalDescription(answer);
                         }
-                    } catch(err) { alert("Format QR rute salah!"); }
+                    } catch(err) { bukaKerenModal("Scan Eror", "Format QR rute salah atau tidak terbaca!", "scan"); }
                 }, () => {}
             );
         }
@@ -1281,7 +1436,6 @@
             const input = document.getElementById('msgInput');
             const teks = input.value.trim();
             if (teks && dataChannel) {
-                // Mendukung Online Conn (PeerJS) dan DataChannel Asli
                 if(dataChannel.readyState === "open" || dataChannel.open) {
                     dataChannel.send(JSON.stringify({ tipe: "CHATTING", data: teks }));
                     log(teks, "me");
